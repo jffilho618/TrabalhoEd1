@@ -3,7 +3,7 @@
 #include "image.h"
 
 ImageGray *create_image_gray(){
-    FILE *input_image_example_gray = fopen("C:\\Users\\jffil\\OneDrive\\Documentos\\ED1\\Trabalho_2_avaliacao\\trabalhoED1\\imagem_convertida_gray.txt", "r");
+    FILE *input_image_example_gray = fopen("C:\\Users\\jffil\\OneDrive\\Documentos\\ED1\\Trabalho_2_avaliacao\\TrabalhoEd1\\imagem_convertida_gray.txt", "r");
 
     if (input_image_example_gray == NULL){
         perror("Erro ao abrir o arquivo");
@@ -52,7 +52,7 @@ void print_image_gray(ImageGray *img_gray){
 }
 
 ImageRGB *create_image_rgb(){
-    FILE *input_image_example_RGB = fopen("C:\\Users\\jffil\\OneDrive\\Documentos\\ED1\\Trabalho_2_avaliacao\\trabalhoED1\\imagem_convertida_rgb.txt", "r");
+    FILE *input_image_example_RGB = fopen("C:\\Users\\jffil\\OneDrive\\Documentos\\ED1\\Trabalho_2_avaliacao\\TrabalhoEd1\\imagem_convertida_rgb.txt", "r");
 
     if (input_image_example_RGB == NULL){
         perror("Erro ao abrir o arquivo");
@@ -210,4 +210,44 @@ ImageRGB *flip_horizontal_rgb(ImageRGB *img_rgb){
     free(img_rgb->pixels);
     free(img_rgb);
     return img_rgb_horizontal_flip;
+}
+
+ImageRGB* copy_image_rgb(ImageRGB* img) {
+    ImageRGB* img_copy = (ImageRGB*)malloc(sizeof(ImageRGB));
+    if (img_copy == NULL) {
+        printf("Erro ao alocar memória para a cópia da imagem RGB.\n");
+        return NULL;
+    }
+    img_copy->dim.altura = img->dim.altura;
+    img_copy->dim.largura = img->dim.largura;
+    img_copy->pixels = (PixelRGB*)malloc(img_copy->dim.altura * img_copy->dim.largura * sizeof(PixelRGB));
+    if (img_copy->pixels == NULL) {
+        printf("Erro ao alocar memória para os pixels da cópia da imagem RGB.\n");
+        free(img_copy);
+        return NULL;
+    }
+    for (int i = 0; i < img_copy->dim.altura * img_copy->dim.largura; i++) {
+        img_copy->pixels[i] = img->pixels[i];
+    }
+    return img_copy;
+}
+
+ImageGray* copy_image_gray(ImageGray* img) {
+    ImageGray* img_copy = (ImageGray*)malloc(sizeof(ImageGray));
+    if (img_copy == NULL) {
+        printf("Erro ao alocar memória para a cópia da imagem Gray.\n");
+        return NULL;
+    }
+    img_copy->dim.altura = img->dim.altura;
+    img_copy->dim.largura = img->dim.largura;
+    img_copy->pixels = (PixelGray*)malloc(img_copy->dim.altura * img_copy->dim.largura * sizeof(PixelGray));
+    if (img_copy->pixels == NULL) {
+        printf("Erro ao alocar memória para os pixels da cópia da imagem Gray.\n");
+        free(img_copy);
+        return NULL;
+    }
+    for (int i = 0; i < img_copy->dim.altura * img_copy->dim.largura; i++) {
+        img_copy->pixels[i] = img->pixels[i];
+    }
+    return img_copy;
 }
