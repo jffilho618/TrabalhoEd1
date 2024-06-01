@@ -15,6 +15,9 @@ int main(){
 
     img_rgb = flip_vertical_rgb(img_rgb);
     print_image_rgb(img_rgb);
+
+    img_rgb = flip_horizontal_rgb(img_rgb);
+    print_image_rgb(img_rgb);
     return 0;
 
 }
