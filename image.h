@@ -38,8 +38,8 @@ ImageGray *flip_horizontal_gray(ImageGray *img_gray);
 //ImageGray *transpose(const ImageGray *image);
 
 // Operações para ImageRGB
-ImageRGB *flip_vertical_rgb(ImageRGB *image_rgb);
-ImageRGB *flip_horizontal_rgb(ImageRGB *image_rgb);
+ImageRGB *flip_vertical_rgb(ImageRGB *img_rgb);
+ImageRGB *flip_horizontal_rgb(ImageRGB *img_rgb);
 //ImageRGB *transpose(const ImageRGB *image);
 
 // Manipulação por pixel para ImageGray
@@ -50,4 +50,6 @@ ImageGray *median_blur_gray(const ImageGray *image, int kernel_size);
 ImageRGB *clahe_rgb(const ImageRGB *image, int tile_width, int tile_height);
 ImageRGB *median_blur_rgb(const ImageRGB *image, int kernel_size);
 
+ImageGray* copy_image_gray(ImageGray* img);
+ImageRGB* copy_image_rgb(ImageRGB* img);
 #endif // IMAGE_H
