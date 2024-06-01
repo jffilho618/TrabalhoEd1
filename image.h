@@ -28,18 +28,19 @@ ImageGray *create_image_gray();
 void free_image_gray(ImageGray *img_gray);
 void print_image_gray(ImageGray *img_gray);
 
-ImageRGB *create_image_rgb(int largura, int altura);
-void free_image_rgb(ImageRGB *image);
+ImageRGB *create_image_rgb();
+void free_image_rgb(ImageRGB *img_rgb);
+void printImagemRGB(ImageRGB *img_rgb);
 
 // Operações para ImageGray
 ImageGray *flip_vertical_gray(ImageGray *image);
 ImageGray *flip_horizontal_gray(ImageGray *image);
-ImageGray *transpose(const ImageGray *image);
+//ImageGray *transpose(const ImageGray *image);
 
 // Operações para ImageRGB
 ImageRGB *flip_vertical_rgb(const ImageRGB *image);
 ImageRGB *flip_horizontal_rgb(const ImageRGB *image);
-ImageRGB *transpose(const ImageRGB *image);
+//ImageRGB *transpose(const ImageRGB *image);
 
 // Manipulação por pixel para ImageGray
 ImageGray *clahe_gray(const ImageGray *image, int tile_width, int tile_height);
