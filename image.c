@@ -98,3 +98,58 @@ void printImagemRGB(ImageRGB *img_rgb){
         printf("\n");
     }
 }
+
+ImageGray *flip_vertical_gray(ImageGray *img_gray){
+    ImageGray *img_gray_vertical_flip = (ImageGray*)malloc(sizeof(ImageGray));
+    if (img_gray_vertical_flip == NULL) {
+        printf("Erro ao alocar memória para a imagem.\n");
+        return NULL;
+    }
+
+    img_gray_vertical_flip->dim.altura = img_gray->dim.altura;
+    img_gray_vertical_flip->dim.largura = img_gray->dim.largura;
+
+    img_gray_vertical_flip->pixels = (PixelGray*)malloc((img_gray->dim.altura * img_gray->dim.largura) * sizeof(PixelGray));
+    if (img_gray_vertical_flip->pixels == NULL) {
+        printf("Erro ao alocar memória para os pixels da imagem.\n");
+        free(img_gray_vertical_flip);
+        return NULL;
+    }
+
+    for (int i = 0; i < img_gray->dim.altura; i++){
+        for (int j = 0; j < img_gray->dim.largura; j++){
+            img_gray_vertical_flip->pixels[i * img_gray->dim.largura + j].value = img_gray->pixels[(img_gray->dim.altura - i - 1) * img_gray->dim.largura + j].value;
+        }
+    }
+    free(img_gray->pixels);
+    free(img_gray);
+    return img_gray_vertical_flip;
+}
+
+ImageGray *flip_horizontal_gray(ImageGray *img_gray) {
+    ImageGray *img_gray_horizontal_flip = (ImageGray*)malloc(sizeof(ImageGray));
+    if (img_gray_horizontal_flip == NULL) {
+        printf("Erro ao alocar memória para a imagem.\n");
+        return NULL;
+    }
+
+    img_gray_horizontal_flip->dim.altura = img_gray->dim.altura;
+    img_gray_horizontal_flip->dim.largura = img_gray->dim.largura;
+
+    img_gray_horizontal_flip->pixels = (PixelGray*)malloc((img_gray_horizontal_flip->dim.altura * img_gray_horizontal_flip->dim.largura) * sizeof(PixelGray));
+    if (img_gray_horizontal_flip->pixels == NULL) {
+        printf("Erro ao alocar memória para os pixels da imagem.\n");
+        free(img_gray_horizontal_flip);
+        return NULL;
+    }
+
+    for (int i = 0; i < img_gray_horizontal_flip->dim.altura; i++) {
+        for (int j = 0; j < img_gray_horizontal_flip->dim.largura; j++) {
+            img_gray_horizontal_flip->pixels[i * img_gray_horizontal_flip->dim.largura + j].value = img_gray->pixels[i * img_gray->dim.largura + (img_gray->dim.largura - j - 1)].value;
+        }
+    }
+    free(img_gray->pixels);
+    free(img_gray);
+
+    return img_gray_horizontal_flip;
+}
