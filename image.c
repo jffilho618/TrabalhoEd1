@@ -251,3 +251,327 @@ ImageGray* copy_image_gray(ImageGray* img) {
     }
     return img_copy;
 }
+
+void OrdenaVetor(int *tempvetor, int cont) {
+    int i, j, temp;
+    for (i = 0; i < cont-1; i++) {     
+        for (j = 0; j < cont-i-1; j++) {
+            if (tempvetor[j] > tempvetor[j+1]) {
+                temp = tempvetor[j];
+                tempvetor[j] = tempvetor[j+1];
+                tempvetor[j+1] = temp;
+            }
+        }
+    }
+}
+
+int Mediana(int *temp_vetor, int cont) {
+   
+   OrdenaVetor(temp_vetor, cont);
+
+   int meio = cont / 2;
+
+   if (cont % 2 == 0) {
+      return (temp_vetor[meio - 1] + temp_vetor[meio]) / 2;
+   } else {
+      return temp_vetor[meio];
+   }
+}
+
+int pixelmediana_Gray(ImageGray *img_gray, int posicao_atual) {
+    int *temp_vetor, cont, mediana;
+    
+    
+    if (posicao_atual == 0 || posicao_atual == 499 ||
+        posicao_atual == 249500 || posicao_atual == 249999) {
+        cont = 4;
+    } else if (posicao_atual < 500 || posicao_atual >= 249500 ||
+               posicao_atual % 500 == 0 || (posicao_atual + 1) % 500 == 0) {
+        cont = 6;
+    } else {
+        cont = 9;
+    }
+
+    temp_vetor = malloc(cont * sizeof(int));
+    if (temp_vetor == NULL) {
+        printf("Falha na alocacao");
+        exit(1);
+    }
+
+    
+    cont = 0;
+    if (posicao_atual % 500 != 0) {
+        temp_vetor[cont++] = img_gray->pixels[posicao_atual - 1].value;
+    }
+    if ((posicao_atual + 1) % 500 != 0) {
+        temp_vetor[cont++] = img_gray->pixels[posicao_atual + 1].value;
+    }
+    if (posicao_atual >= 500) {
+        temp_vetor[cont++] = img_gray->pixels[posicao_atual - 500].value;
+        if (posicao_atual % 500 != 0) {
+            temp_vetor[cont++] = img_gray->pixels[posicao_atual - 501].value;
+        }
+        if ((posicao_atual + 1) % 500 != 0) {
+            temp_vetor[cont++] = img_gray->pixels[posicao_atual - 499].value;
+        }
+    }
+    if (posicao_atual < 249500) {
+        temp_vetor[cont++] = img_gray->pixels[posicao_atual + 500].value;
+        if (posicao_atual % 500 != 0) {
+            temp_vetor[cont++] = img_gray->pixels[posicao_atual + 499].value;
+        }
+        if ((posicao_atual + 1) % 500 != 0) {
+            temp_vetor[cont++] = img_gray->pixels[posicao_atual + 501].value; 
+        }
+    }
+
+    mediana = Mediana(temp_vetor, cont);
+    free(temp_vetor);
+
+    return mediana;
+}
+
+int pixelmediana_RGB(ImageRGB *img_rgb, int posicao_atual, int n) {
+    int *temp_vetor, cont, mediana;
+    
+    
+    if (posicao_atual == 0 || posicao_atual == 499 ||
+        posicao_atual == 249500 || posicao_atual == 249999) {
+        cont = 4;
+    } else if (posicao_atual < 500 || posicao_atual >= 249500 ||
+               posicao_atual % 500 == 0 || (posicao_atual + 1) % 500 == 0) {
+        cont = 6;
+    } else {
+        cont = 9;
+    }
+
+    temp_vetor = malloc(cont * sizeof(int));
+    if (temp_vetor == NULL) {
+        printf("Falha na alocacao");
+        exit(1);
+    }
+
+    
+    cont = 0;
+    if (posicao_atual % 500 != 0) {
+        if(n == 1){
+          temp_vetor[cont++] = img_rgb->pixels[posicao_atual - 1].blue;
+        }
+        if(n == 2){
+          temp_vetor[cont++] = img_rgb->pixels[posicao_atual - 1].green;
+        }
+        if(n == 3){
+          temp_vetor[cont++] = img_rgb->pixels[posicao_atual - 1].red;  
+        }
+    }
+    if ((posicao_atual + 1) % 500 != 0) {
+        if(n == 1){
+           temp_vetor[cont++] = img_rgb->pixels[posicao_atual + 1].blue;
+        }
+        if(n == 2){
+           temp_vetor[cont++] = img_rgb->pixels[posicao_atual + 1].green; 
+        }
+        if(n == 3){
+            temp_vetor[cont++] = img_rgb->pixels[posicao_atual + 1].red;
+        }
+    }
+    if (posicao_atual >= 500) {
+        if(n == 1){
+            temp_vetor[cont++] = img_rgb->pixels[posicao_atual - 500].blue;
+        }
+        if(n == 2){
+           temp_vetor[cont++] = img_rgb->pixels[posicao_atual - 500].green;
+        }
+        if(n == 3){
+            temp_vetor[cont++] = img_rgb->pixels[posicao_atual - 500].red;
+        }
+        if (posicao_atual % 500 != 0) {
+            if(n == 1){
+               temp_vetor[cont++] = img_rgb->pixels[posicao_atual - 501].blue;
+            }
+            if(n == 2){
+               temp_vetor[cont++] = img_rgb->pixels[posicao_atual - 501].green;
+            }
+            if(n == 3){
+                temp_vetor[cont++] = img_rgb->pixels[posicao_atual - 501].red;
+            }
+        }
+        if ((posicao_atual + 1) % 500 != 0) {
+            if(n == 1){
+               temp_vetor[cont++] = img_rgb->pixels[posicao_atual - 499].blue;
+            }
+            if(n == 2){
+                temp_vetor[cont++] = img_rgb->pixels[posicao_atual - 499].green;
+            } 
+            if(n == 3){
+                temp_vetor[cont++] = img_rgb->pixels[posicao_atual - 499].red;
+            }
+        }
+    }
+    if (posicao_atual < 249500) {
+        if(n == 1){
+           temp_vetor[cont++] = img_rgb->pixels[posicao_atual + 500].blue;
+        }
+        if(n == 2){
+           temp_vetor[cont++] = img_rgb->pixels[posicao_atual + 500].green;
+        }
+        if(n == 3){
+            temp_vetor[cont++] = img_rgb->pixels[posicao_atual + 500].red;
+        }
+        if (posicao_atual % 500 != 0) {
+            if(n == 1){
+                temp_vetor[cont++] = img_rgb->pixels[posicao_atual + 499].blue;
+            }
+            if(n == 2){
+                temp_vetor[cont++] = img_rgb->pixels[posicao_atual + 499].green;
+            }
+            if(n == 3){
+                temp_vetor[cont++] = img_rgb->pixels[posicao_atual + 499].red;
+            }
+        }
+        if ((posicao_atual + 1) % 500 != 0) {
+            if(n == 1){
+                temp_vetor[cont++] = img_rgb->pixels[posicao_atual + 501].blue; 
+            }
+            if(n == 2){
+                temp_vetor[cont++] = img_rgb->pixels[posicao_atual + 501].green; 
+            }
+            if(n == 3){
+                temp_vetor[cont++] = img_rgb->pixels[posicao_atual + 501].red; 
+            }
+        }
+    }
+
+    mediana = Mediana(temp_vetor, cont);
+    free(temp_vetor);
+
+    return mediana;
+}
+
+
+ImageGray *median_blur_gray(ImageGray *img_gray){ 
+    ImageGray *img_gray_medium_blur = (ImageGray*)malloc(sizeof(ImageGray)); 
+    int posicao_atual; 
+    if(img_gray_medium_blur == NULL){
+        printf("Erro ao alocar memória para a imagem.\n");
+        return NULL;
+    }
+
+    img_gray_medium_blur->dim.altura = img_gray->dim.altura; 
+    img_gray_medium_blur->dim.largura = img_gray->dim.largura;
+    
+    img_gray_medium_blur->pixels = (PixelGray*)malloc((img_gray_medium_blur->dim.altura * img_gray_medium_blur->dim.largura) * sizeof(PixelGray));
+    if (img_gray_medium_blur == NULL) {
+        printf("Erro ao alocar memória para os pixels da imagem.\n");
+        free(img_gray_medium_blur);
+        return NULL;
+    }
+   
+
+    for (int i = 0; i < img_gray->dim.altura; i++){
+        for (int j = 0; j < img_gray->dim.largura; j++){
+           posicao_atual = (i * img_gray->dim.largura) + j;  
+           img_gray_medium_blur->pixels[posicao_atual].value =  pixelmediana_Gray(img_gray, posicao_atual);     
+        }
+    }
+
+    free(img_gray->pixels);
+    free(img_gray);
+    return img_gray_medium_blur; 
+
+} 
+
+
+
+ImageRGB *median_blur_rgb(ImageRGB *img_rgb){ 
+    
+    ImageRGB *img_RGB_median_blur = (ImageRGB*)malloc(sizeof(ImageRGB));
+    if (img_RGB_median_blur == NULL) {
+        printf("Erro ao alocar memória para a imagem.\n");
+        return NULL;
+    }
+
+    img_RGB_median_blur->dim.altura = img_rgb->dim.altura; 
+    img_RGB_median_blur->dim.largura = img_rgb->dim.largura;
+    
+    img_RGB_median_blur->pixels = (PixelRGB*)malloc((img_RGB_median_blur->dim.altura * img_RGB_median_blur->dim.largura) * sizeof(PixelRGB));
+    if (img_RGB_median_blur->pixels == NULL) {
+        printf("Erro ao alocar memória para os pixels da imagem.\n");
+        free(img_RGB_median_blur);
+        return NULL;
+    }
+
+    for (int i = 0; i < img_rgb->dim.altura; i++){
+        for (int j = 0; j < img_rgb->dim.largura; j++){
+           int posicao_atual = (i * img_rgb->dim.largura) + j; 
+           img_RGB_median_blur->pixels[posicao_atual].blue = pixelmediana_RGB(img_rgb, posicao_atual, 1); 
+           img_RGB_median_blur->pixels[posicao_atual].green = pixelmediana_RGB(img_rgb, posicao_atual, 2);  
+           img_RGB_median_blur->pixels[posicao_atual].red = pixelmediana_RGB(img_rgb, posicao_atual, 3);   
+        }
+    }
+    free(img_rgb->pixels);
+    free(img_rgb);
+    return img_RGB_median_blur; 
+}
+
+ImageGray *transpose_gray(ImageGray *img_gray) {
+    ImageGray *img_gray_transpose = (ImageGray*)malloc(sizeof(ImageGray));
+    if (img_gray_transpose == NULL) {
+        printf("Erro ao alocar memória para a imagem.\n");
+        return NULL;
+    }
+
+    img_gray_transpose->dim.altura = img_gray->dim.largura;
+    img_gray_transpose->dim.largura = img_gray->dim.altura;
+
+    img_gray_transpose->pixels = (PixelGray*)malloc((img_gray_transpose->dim.altura * img_gray_transpose->dim.largura) * sizeof(PixelGray));
+
+    if (img_gray_transpose->pixels == NULL) {
+        printf("Erro ao alocar memória para os pixels da imagem.\n");
+        free(img_gray_transpose);
+        return NULL;
+    }
+
+    for (int i = 0; i < img_gray->dim.altura; i++) {
+        for (int j = 0; j < img_gray->dim.largura; j++) {
+            img_gray_transpose->pixels[i * img_gray_transpose->dim.largura + j].value = img_gray->pixels[j * img_gray->dim.largura + i].value;
+        }
+    }
+
+    free(img_gray->pixels);
+    free(img_gray);
+    
+    return img_gray_transpose;
+}
+
+ImageRGB *transpose_rgb(ImageRGB *img_gray) {
+    ImageRGB *img_rgb_transpose = (ImageRGB*)malloc(sizeof(ImageRGB));
+    if (img_rgb_transpose == NULL) {
+        printf("Erro ao alocar memória para a imagem.\n");
+        return NULL;
+    }
+
+    img_rgb_transpose->dim.altura = img_gray->dim.largura;
+    img_rgb_transpose->dim.largura = img_gray->dim.altura;
+
+    img_rgb_transpose->pixels = (PixelRGB*)malloc((img_rgb_transpose->dim.altura * img_rgb_transpose->dim.largura) * sizeof(PixelRGB));
+
+    if (img_rgb_transpose->pixels == NULL) {
+        printf("Erro ao alocar memória para os pixels da imagem.\n");
+        free(img_rgb_transpose);
+        return NULL;
+    }
+
+    for (int i = 0; i < img_gray->dim.altura; i++) {
+        for (int j = 0; j < img_gray->dim.largura; j++) {
+            img_rgb_transpose->pixels[i * img_rgb_transpose->dim.largura + j].red = img_gray->pixels[j * img_gray->dim.largura + i].red;
+            img_rgb_transpose->pixels[i * img_rgb_transpose->dim.largura + j].green = img_gray->pixels[j * img_gray->dim.largura + i].green;
+            img_rgb_transpose->pixels[i * img_rgb_transpose->dim.largura + j].blue = img_gray->pixels[j * img_gray->dim.largura + i].blue;
+        }
+    }
+
+    free(img_gray->pixels);
+    free(img_gray);
+    
+    return img_rgb_transpose;
+}

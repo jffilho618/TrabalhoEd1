@@ -35,21 +35,25 @@ void print_image_rgb(ImageRGB *img_rgb);
 // Operações para ImageGray
 ImageGray *flip_vertical_gray(ImageGray *img_gray);
 ImageGray *flip_horizontal_gray(ImageGray *img_gray);
-//ImageGray *transpose(const ImageGray *image);
+ImageGray *transpose_gray(ImageGray *img_gray);
 
 // Operações para ImageRGB
 ImageRGB *flip_vertical_rgb(ImageRGB *img_rgb);
 ImageRGB *flip_horizontal_rgb(ImageRGB *img_rgb);
-//ImageRGB *transpose(const ImageRGB *image);
+ImageRGB *transpose_rgb(ImageRGB *image);
 
 // Manipulação por pixel para ImageGray
 ImageGray *clahe_gray(const ImageGray *image, int tile_width, int tile_height);
-ImageGray *median_blur_gray(const ImageGray *image, int kernel_size);
-
+ImageGray *median_blur_gray(ImageGray *img_gray);
 // Manipulação por pixel para ImageRGB
 ImageRGB *clahe_rgb(const ImageRGB *image, int tile_width, int tile_height);
-ImageRGB *median_blur_rgb(const ImageRGB *image, int kernel_size);
+ImageRGB *median_blur_rgb(ImageRGB *img_rgb);
 
 ImageGray* copy_image_gray(ImageGray* img);
 ImageRGB* copy_image_rgb(ImageRGB* img);
+
+void OrdenaVetor(int *tempvetor, int cont);
+int Mediana(int *temp_vetor, int cont);
+int pixelmediana_Gray(ImageGray *img_gray, int posicao_atual);
+int pixelmediana_RGB(ImageRGB *img_rgb, int posicao_atual, int cor);
 #endif // IMAGE_H
