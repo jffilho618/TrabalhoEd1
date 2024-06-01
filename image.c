@@ -50,3 +50,51 @@ void print_image_gray(ImageGray *img_gray){
         printf("\n");
     }
 }
+
+ImageRGB *create_image_rgb(){
+    FILE *input_image_example_RGB = fopen("C:\\Users\\jffil\\OneDrive\\Documentos\\ED1\\Trabalho_2_avaliacao\\trabalhoED1\\imagem_convertida_rgb.txt", "r");
+
+    if (input_image_example_RGB == NULL){
+        perror("Erro ao abrir o arquivo");
+        return NULL;
+    }
+    
+    ImageRGB *img_rgb = (ImageRGB*)malloc(sizeof(ImageRGB));
+    if (img_rgb == NULL) {
+        printf("Erro ao alocar memória para a imagem.\n");
+        fclose(input_image_example_RGB);
+        return NULL;
+    }
+
+    fscanf(input_image_example_RGB, "%d", &img_rgb->dim.altura);
+    fscanf(input_image_example_RGB, "%d", &img_rgb->dim.largura);
+
+    img_rgb->pixels = (PixelRGB*)malloc((img_rgb->dim.altura * img_rgb->dim.largura) * sizeof(PixelRGB));
+    if (img_rgb->pixels == NULL) {
+        printf("Erro ao alocar memória para os pixels da imagem.\n");
+        fclose(input_image_example_RGB);
+        free(img_rgb);
+        return NULL;
+    }
+    for (int i = 0; i < img_rgb->dim.altura; i++){
+        for (int j = 0; j < img_rgb->dim.largura; j++) {
+            fscanf(input_image_example_RGB, "%d %d %d,", &img_rgb->pixels[i * img_rgb->dim.largura + j].red, &img_rgb->pixels[i * img_rgb->dim.largura + j].green, &img_rgb->pixels[i * img_rgb->dim.largura + j].blue);
+        }
+    }
+
+    fclose(input_image_example_RGB);
+    return img_rgb;
+}
+
+void printImagemRGB(ImageRGB *img_rgb){
+    int r,g,b;
+    for (int i = 0; i < img_rgb->dim.altura; i++){
+        for (int j = 0; j < img_rgb->dim.largura; j++){
+            r = img_rgb->pixels[i*img_rgb->dim.largura+j].red;
+            g = img_rgb->pixels[i*img_rgb->dim.largura+j].green;
+            b = img_rgb->pixels[i*img_rgb->dim.largura+j].blue;
+            printf("\033[38;2;%d;%d;%dm**\033[0m", r, g, b);
+        }
+        printf("\n");
+    }
+}
