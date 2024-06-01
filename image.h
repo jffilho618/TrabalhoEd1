@@ -33,8 +33,8 @@ void free_image_rgb(ImageRGB *img_rgb);
 void printImagemRGB(ImageRGB *img_rgb);
 
 // Operações para ImageGray
-ImageGray *flip_vertical_gray(ImageGray *image);
-ImageGray *flip_horizontal_gray(ImageGray *image);
+ImageGray *flip_vertical_gray(ImageGray *img_gray);
+ImageGray *flip_horizontal_gray(ImageGray *img_gray);
 //ImageGray *transpose(const ImageGray *image);
 
 // Operações para ImageRGB
