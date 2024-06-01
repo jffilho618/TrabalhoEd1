@@ -86,7 +86,7 @@ ImageRGB *create_image_rgb(){
     return img_rgb;
 }
 
-void printImagemRGB(ImageRGB *img_rgb){
+void print_image_rgb(ImageRGB *img_rgb){
     int r,g,b;
     for (int i = 0; i < img_rgb->dim.altura; i++){
         for (int j = 0; j < img_rgb->dim.largura; j++){
@@ -152,4 +152,33 @@ ImageGray *flip_horizontal_gray(ImageGray *img_gray) {
     free(img_gray);
 
     return img_gray_horizontal_flip;
+}
+
+ImageRGB *flip_vertical_rgb(ImageRGB *img_rgb){
+    ImageRGB *img_rgb_vertical_flip = (ImageRGB*)malloc(sizeof(ImageRGB));
+    if (img_rgb_vertical_flip == NULL) {
+        printf("Erro ao alocar memória para a imagem.\n");
+        return NULL;
+    }
+
+    img_rgb_vertical_flip->dim.altura = img_rgb->dim.altura;
+    img_rgb_vertical_flip->dim.largura = img_rgb->dim.largura;
+
+    img_rgb_vertical_flip->pixels = (PixelRGB*)malloc((img_rgb->dim.altura * img_rgb->dim.largura) * sizeof(PixelRGB));
+    if (img_rgb_vertical_flip->pixels == NULL) {
+        printf("Erro ao alocar memória para os pixels da imagem.\n");
+        free(img_rgb_vertical_flip);
+        return NULL;
+    }
+
+    for (int i = 0; i < img_rgb->dim.altura; i++){
+        for (int j = 0; j < img_rgb->dim.largura; j++){
+            img_rgb_vertical_flip->pixels[i * img_rgb->dim.largura + j].red = img_rgb->pixels[(img_rgb->dim.altura - i - 1) * img_rgb->dim.largura + j].red;
+            img_rgb_vertical_flip->pixels[i * img_rgb->dim.largura + j].green = img_rgb->pixels[(img_rgb->dim.altura - i - 1) * img_rgb->dim.largura + j].green;
+            img_rgb_vertical_flip->pixels[i * img_rgb->dim.largura + j].blue = img_rgb->pixels[(img_rgb->dim.altura - i - 1) * img_rgb->dim.largura + j].blue;
+        }
+    }
+    free(img_rgb->pixels);
+    free(img_rgb);
+    return img_rgb_vertical_flip;
 }

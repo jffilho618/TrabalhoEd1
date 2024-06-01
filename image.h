@@ -30,7 +30,7 @@ void print_image_gray(ImageGray *img_gray);
 
 ImageRGB *create_image_rgb();
 void free_image_rgb(ImageRGB *img_rgb);
-void printImagemRGB(ImageRGB *img_rgb);
+void print_image_rgb(ImageRGB *img_rgb);
 
 // Operações para ImageGray
 ImageGray *flip_vertical_gray(ImageGray *img_gray);
