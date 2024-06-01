@@ -51,8 +51,8 @@ int main() {
                             break;
                         }
                         case 5: {
-                            //img_rgb_copia = median_blur_rgb(img_rgb_copia);
-                            //print_image_rgb(img_rgb_copia);
+                            img_rgb_copia = median_blur_rgb(img_rgb_copia);
+                            print_image_rgb(img_rgb_copia);
                             break;
                         }
                     }
@@ -93,8 +93,8 @@ int main() {
                             break;
                         }
                         case 5: {
-                            //img_gray_copia = median_blur_gray(img_gray_copia);
-                            //print_image_gray(img_gray_copia);
+                            img_gray_copia = median_blur_gray(img_gray_copia);
+                            print_image_gray(img_gray_copia);
                             break;
                         }
                     }
