@@ -92,6 +92,11 @@ int main() {
                             print_image_gray(img_gray_copia);
                             break;
                         }
+                        case 4: {
+                            img_gray_copia = clahe_gray(img_gray_copia);
+                            print_image_gray(img_gray_copia); 
+                            break;
+                        }
                         case 5: {
                             img_gray_copia = median_blur_gray(img_gray_copia);
                             print_image_gray(img_gray_copia);
