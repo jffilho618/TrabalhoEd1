@@ -302,20 +302,20 @@ int Mediana(int *temp_vetor, int cont) {
 int pixelmediana_Gray(ImageGray *img_gray, int posicao_atual) {
     int *temp_vetor, cont, mediana;
     
-    // Determina o tamanho do vetor temporário
-    int max_vizinhos = 225; // 15x15
+    
+    int max_vizinhos = 81; 
 
-    temp_vetor = malloc(max_vizinhos * sizeof(int));
+    temp_vetor = (int*) malloc(max_vizinhos * sizeof(int));
     if (temp_vetor == NULL) {
-        printf("Falha na alocacao");
+        printf("Falha na alocacao\n");
         exit(1);
     }
 
     cont = 0;
     
-    // Varre a área 15x15 ao redor do pixel atual
-    for (int i = -7; i <= 7; i++) {
-        for (int j = -7; j <= 7; j++) {
+    
+    for (int i = -4; i <= 4; i++) {
+        for (int j = -4; j <= 4; j++) {
             int nx = (posicao_atual % 500) + j;
             int ny = (posicao_atual / 500) + i;
             if (nx >= 0 && nx < 500 && ny >= 0 && ny < 500) {
@@ -334,32 +334,32 @@ int pixelmediana_Gray(ImageGray *img_gray, int posicao_atual) {
 int pixelmediana_RGB(ImageRGB *img_rgb, int posicao_atual, int n) {
     int *temp_vetor, cont, mediana;
     
-    // Determina o tamanho do vetor temporário
-    int max_vizinhos = 225; // 15x15
+    
+    int max_vizinhos = 81;
 
-    temp_vetor = malloc(max_vizinhos * sizeof(int));
+    temp_vetor = (int*) malloc(max_vizinhos * sizeof(int));
     if (temp_vetor == NULL) {
-        printf("Falha na alocacao");
+        printf("Falha na alocacao\n");
         exit(1);
     }
 
     cont = 0;
     
-    // Varre a área 15x15 ao redor do pixel atual
-    for (int i = -7; i <= 7; i++) {
-        for (int j = -7; j <= 7; j++) {
+    
+    for (int i = -4; i <= 4; i++) {
+        for (int j = -4; j <= 4; j++) {
             int nx = (posicao_atual % 500) + j;
             int ny = (posicao_atual / 500) + i;
             if (nx >= 0 && nx < 500 && ny >= 0 && ny < 500) {
                 int posicao_vizinho = ny * 500 + nx;
-                if(n == 1){
-                   temp_vetor[cont++] = img_rgb->pixels[posicao_vizinho].blue; 
+                if (n == 1) {
+                    temp_vetor[cont++] = img_rgb->pixels[posicao_vizinho].blue;
                 }
-                if(n == 2){
-                   temp_vetor[cont++] = img_rgb->pixels[posicao_vizinho].green; 
+                if (n == 2) {
+                    temp_vetor[cont++] = img_rgb->pixels[posicao_vizinho].green;
                 }
-                if(n == 3){
-                   temp_vetor[cont++] = img_rgb->pixels[posicao_vizinho].red; 
+                if (n == 3) {
+                    temp_vetor[cont++] = img_rgb->pixels[posicao_vizinho].red;
                 }
             }
         }
