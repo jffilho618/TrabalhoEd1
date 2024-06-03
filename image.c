@@ -498,3 +498,168 @@ ImageRGB *transpose_rgb(ImageRGB *img_gray) {
     
     return img_rgb_transpose;
 }
+
+
+//a partir daqui vem a implementação da Clahe_Gray
+
+
+Bloco* coletarBlocos(ImageGray *img_gray, int qtdade_blocos, int tamanho_bloco) {
+    Bloco *blocos = (Bloco*)malloc(qtdade_blocos * sizeof(Bloco));
+    if (blocos == NULL) {
+        printf("Falha na alocacao\n");
+        exit(1);
+    }
+
+    int linha = 0;
+    int coluna = 0;
+
+    for (int k = 0; k < qtdade_blocos; k++) {
+        blocos[k].Vetor_Bloco = (int*) malloc(tamanho_bloco * sizeof(int));
+        if (blocos[k].Vetor_Bloco == NULL) {
+            printf("Falha na alocacao\n");
+            for (int l = 0; l < k; l++) {
+                free(blocos[l].Vetor_Bloco);
+            }
+            free(blocos);
+            exit(1);
+        }
+
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 20; j++) {
+                int posicao = (linha + i) * img_gray->dim.largura + (coluna + j);
+                blocos[k].Vetor_Bloco[i * 20 + j] = img_gray->pixels[posicao].value;
+            }
+        }
+        blocos[k].posicao = k;
+
+        // Atualiza coluna e linha
+        coluna += 20;
+        if (coluna >= img_gray->dim.largura) {
+            coluna = 0;
+            linha += 20;
+        }
+    }
+
+    return blocos;
+}
+
+void recolocarValores(ImageGray *img_gray, Bloco *blocos, int qtdade_blocos) {
+    int linha = 0;
+    int coluna = 0;
+
+    for (int k = 0; k < qtdade_blocos; k++) {
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 20; j++) {
+                int posicao = (linha + i) * img_gray->dim.largura + (coluna + j);
+                img_gray->pixels[posicao].value = blocos[k].Vetor_Bloco[i * 20 + j];
+            }
+        }
+
+        // Atualiza coluna e linha
+        coluna += 20;
+        if (coluna >= img_gray->dim.largura) {
+            coluna = 0;
+            linha += 20;
+        }
+    }
+}
+
+void normalizacao_e_equalizacao_do_histograma(Histograma *histogramas, int numero_bloco) {
+    int valor, resultado;
+    float divisor1, divisor2, normalizacao;
+
+    for (int i = 1; i < 256; i++) {
+        histogramas[numero_bloco].frequencias_CDF[i] += histogramas[numero_bloco].frequencias_CDF[i - 1];
+    }
+
+    for (int i = 0; i < 400; i++) {
+        valor = histogramas[numero_bloco].valores_originais[i];
+        divisor1 = (float)histogramas[numero_bloco].frequencias_CDF[valor];
+        divisor2 = (float)histogramas[numero_bloco].frequencias_CDF[255];
+        normalizacao = divisor1 / divisor2;
+        resultado = (int)(normalizacao * 255);
+        histogramas[numero_bloco].valores_equalizados[i] = resultado;
+    }
+}
+
+void preenchendo_histogramas(Histograma *histogramas, Bloco *blocos, int qtdade_blocos) {
+    int tamanho_histograma = 256;
+    int valores = 400;
+
+    for (int k = 0; k < qtdade_blocos; k++) {
+        histogramas[k].valores_originais = (int*) malloc(valores * sizeof(int));
+        histogramas[k].valores_equalizados = (int*) malloc(valores * sizeof(int));
+        histogramas[k].frequencias = (int*) malloc(tamanho_histograma * sizeof(int));
+        histogramas[k].frequencias_CDF = (int*) malloc(tamanho_histograma * sizeof(int));
+
+        if (histogramas[k].valores_originais == NULL || histogramas[k].valores_equalizados == NULL || histogramas[k].frequencias == NULL || histogramas[k].frequencias_CDF == NULL) {
+            printf("Falha na alocacao\n");
+            exit(1);
+        }
+
+        // Inicializar as frequências com 0
+        for (int m = 0; m < tamanho_histograma; m++) {
+            histogramas[k].frequencias[m] = 0;
+            histogramas[k].frequencias_CDF[m] = 0;
+        }
+
+        for (int i = 0; i < 400; i++) {
+            histogramas[k].valores_originais[i] = blocos[k].Vetor_Bloco[i];
+            histogramas[k].frequencias[blocos[k].Vetor_Bloco[i]]++;
+        }
+
+        // Atualizar CDF
+        for (int i = 0; i < 256; i++) {
+            if (i == 0) {
+                histogramas[k].frequencias_CDF[i] = histogramas[k].frequencias[i];
+            } else {
+                histogramas[k].frequencias_CDF[i] = histogramas[k].frequencias_CDF[i - 1] + histogramas[k].frequencias[i];
+            }
+        }
+
+        normalizacao_e_equalizacao_do_histograma(histogramas, k);
+
+        for (int i = 0; i < 400; i++) {
+            blocos[k].Vetor_Bloco[i] = histogramas[k].valores_equalizados[i];
+        }
+    }
+}
+
+void Iniciando_Histograma(Bloco *blocos) {
+    int qtdade_blocos = 625;
+    Histograma *histogramas = (Histograma*) malloc(qtdade_blocos * sizeof(Histograma));
+
+    if (histogramas == NULL) {
+        printf("Falha na alocacao");
+        exit(1);
+    }
+
+    preenchendo_histogramas(histogramas, blocos, qtdade_blocos);
+
+    // Liberar a memória alocada para histogramas
+    for (int k = 0; k < qtdade_blocos; k++) {
+        free(histogramas[k].valores_originais);
+        free(histogramas[k].valores_equalizados);
+        free(histogramas[k].frequencias);
+        free(histogramas[k].frequencias_CDF);
+    }
+    free(histogramas);
+}
+
+ImageGray *clahe_gray(ImageGray *img_gray){
+    int tamanho_bloco = 400;    
+    int qtdade_blocos = 625;
+    Bloco *blocos;
+    
+    blocos = coletarBlocos(img_gray, qtdade_blocos, tamanho_bloco);
+    Iniciando_Histograma(blocos); 
+    recolocarValores(img_gray, blocos, qtdade_blocos);
+
+    // Liberar a memória alocada para blocos
+    for (int k = 0; k < qtdade_blocos; k++) {
+        free(blocos[k].Vetor_Bloco);
+    }
+    free(blocos);
+
+    return img_gray;
+}
