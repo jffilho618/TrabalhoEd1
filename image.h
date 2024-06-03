@@ -23,6 +23,18 @@ typedef struct imageRGB {
     PixelRGB *pixels;
 } ImageRGB;
 
+typedef struct {
+    int *Vetor_Bloco;
+    int posicao;
+} Bloco;
+
+typedef struct {
+    int *valores_originais;
+    int *frequencias;
+    int *valores_equalizados;
+    int *frequencias_CDF;
+} Histograma;
+
 // Funções de criação e liberação
 ImageGray *create_image_gray();
 void free_image_gray(ImageGray *img_gray);
@@ -43,7 +55,8 @@ ImageRGB *flip_horizontal_rgb(ImageRGB *img_rgb);
 ImageRGB *transpose_rgb(ImageRGB *image);
 
 // Manipulação por pixel para ImageGray
-ImageGray *clahe_gray(const ImageGray *image, int tile_width, int tile_height);
+//ImageGray *clahe_gray(const ImageGray *image, int tile_width, int tile_height);
+ImageGray *clahe_gray(ImageGray *img_gray);
 ImageGray *median_blur_gray(ImageGray *img_gray);
 // Manipulação por pixel para ImageRGB
 ImageRGB *clahe_rgb(const ImageRGB *image, int tile_width, int tile_height);
