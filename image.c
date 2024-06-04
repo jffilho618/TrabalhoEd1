@@ -302,20 +302,20 @@ int Mediana(int *temp_vetor, int cont) {
 int pixelmediana_Gray(ImageGray *img_gray, int posicao_atual) {
     int *temp_vetor, cont, mediana;
     
-    // Determina o tamanho do vetor temporário
-    int max_vizinhos = 225; // 15x15
+    
+    int max_vizinhos = 9; 
 
-    temp_vetor = malloc(max_vizinhos * sizeof(int));
+    temp_vetor = (int*) malloc(max_vizinhos * sizeof(int));
     if (temp_vetor == NULL) {
-        printf("Falha na alocacao");
+        printf("Falha na alocacao\n");
         exit(1);
     }
 
     cont = 0;
     
-    // Varre a área 15x15 ao redor do pixel atual
-    for (int i = -7; i <= 7; i++) {
-        for (int j = -7; j <= 7; j++) {
+    
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
             int nx = (posicao_atual % 500) + j;
             int ny = (posicao_atual / 500) + i;
             if (nx >= 0 && nx < 500 && ny >= 0 && ny < 500) {
@@ -334,32 +334,31 @@ int pixelmediana_Gray(ImageGray *img_gray, int posicao_atual) {
 int pixelmediana_RGB(ImageRGB *img_rgb, int posicao_atual, int n) {
     int *temp_vetor, cont, mediana;
     
-    // Determina o tamanho do vetor temporário
-    int max_vizinhos = 225; // 15x15
+    int max_vizinhos = 9; 
 
-    temp_vetor = malloc(max_vizinhos * sizeof(int));
+    temp_vetor = (int*) malloc(max_vizinhos * sizeof(int));
     if (temp_vetor == NULL) {
-        printf("Falha na alocacao");
+        printf("Falha na alocacao\n");
         exit(1);
     }
 
     cont = 0;
     
-    // Varre a área 15x15 ao redor do pixel atual
-    for (int i = -7; i <= 7; i++) {
-        for (int j = -7; j <= 7; j++) {
+    
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
             int nx = (posicao_atual % 500) + j;
             int ny = (posicao_atual / 500) + i;
             if (nx >= 0 && nx < 500 && ny >= 0 && ny < 500) {
                 int posicao_vizinho = ny * 500 + nx;
-                if(n == 1){
-                   temp_vetor[cont++] = img_rgb->pixels[posicao_vizinho].blue; 
+                if (n == 1) {
+                    temp_vetor[cont++] = img_rgb->pixels[posicao_vizinho].blue;
                 }
-                if(n == 2){
-                   temp_vetor[cont++] = img_rgb->pixels[posicao_vizinho].green; 
+                if (n == 2) {
+                    temp_vetor[cont++] = img_rgb->pixels[posicao_vizinho].green;
                 }
-                if(n == 3){
-                   temp_vetor[cont++] = img_rgb->pixels[posicao_vizinho].red; 
+                if (n == 3) {
+                    temp_vetor[cont++] = img_rgb->pixels[posicao_vizinho].red;
                 }
             }
         }
@@ -564,6 +563,41 @@ void recolocarValores(ImageGray *img_gray, Bloco *blocos, int qtdade_blocos) {
     }
 }
 
+void limitar_distribuicao(Histograma *histogramas, int localizacao_bloco) {
+    int limite = 4; 
+    int qtdade_pixels = 256; 
+    int excesso = 0;
+    int subtracao, excedente, restante; 
+
+    
+    for (int j = 0; j < qtdade_pixels; j++) {
+        if (histogramas[localizacao_bloco].frequencias[j] > limite) {
+            subtracao = histogramas[localizacao_bloco].frequencias[j] - limite; 
+            excesso += subtracao; 
+            histogramas[localizacao_bloco].frequencias[j] = limite; 
+        }
+    }
+
+    excedente = excesso / 256; 
+    restante = excesso % 256; 
+    
+    
+    for (int i = 0; i < qtdade_pixels; i++) {
+        histogramas[localizacao_bloco].frequencias[i] += excedente; 
+    }
+    
+    
+    for (int i = 0; i < restante; i++) {
+        histogramas[localizacao_bloco].frequencias[i] += 1; 
+    }
+
+    
+    histogramas[localizacao_bloco].frequencias_CDF[0] = histogramas[localizacao_bloco].frequencias[0];
+    for (int i = 1; i < qtdade_pixels; i++) {
+        histogramas[localizacao_bloco].frequencias_CDF[i] = histogramas[localizacao_bloco].frequencias_CDF[i - 1] + histogramas[localizacao_bloco].frequencias[i];
+    }
+}
+
 void normalizacao_e_equalizacao_do_histograma(Histograma *histogramas, int numero_bloco) {
     int valor, resultado;
     float divisor1, divisor2, normalizacao;
@@ -597,29 +631,21 @@ void preenchendo_histogramas(Histograma *histogramas, Bloco *blocos, int qtdade_
             exit(1);
         }
 
-        // Inicializar as frequências com 0
         for (int m = 0; m < tamanho_histograma; m++) {
             histogramas[k].frequencias[m] = 0;
             histogramas[k].frequencias_CDF[m] = 0;
         }
 
-        for (int i = 0; i < 400; i++) {
+        for (int i = 0; i < valores; i++) {
             histogramas[k].valores_originais[i] = blocos[k].Vetor_Bloco[i];
             histogramas[k].frequencias[blocos[k].Vetor_Bloco[i]]++;
         }
 
-        // Atualizar CDF
-        for (int i = 0; i < 256; i++) {
-            if (i == 0) {
-                histogramas[k].frequencias_CDF[i] = histogramas[k].frequencias[i];
-            } else {
-                histogramas[k].frequencias_CDF[i] = histogramas[k].frequencias_CDF[i - 1] + histogramas[k].frequencias[i];
-            }
-        }
+        limitar_distribuicao(histogramas, k);
 
         normalizacao_e_equalizacao_do_histograma(histogramas, k);
 
-        for (int i = 0; i < 400; i++) {
+        for (int i = 0; i < valores; i++) {
             blocos[k].Vetor_Bloco[i] = histogramas[k].valores_equalizados[i];
         }
     }
@@ -636,7 +662,6 @@ void Iniciando_Histograma(Bloco *blocos) {
 
     preenchendo_histogramas(histogramas, blocos, qtdade_blocos);
 
-    // Liberar a memória alocada para histogramas
     for (int k = 0; k < qtdade_blocos; k++) {
         free(histogramas[k].valores_originais);
         free(histogramas[k].valores_equalizados);
@@ -655,7 +680,6 @@ ImageGray *clahe_gray(ImageGray *img_gray){
     Iniciando_Histograma(blocos); 
     recolocarValores(img_gray, blocos, qtdade_blocos);
 
-    // Liberar a memória alocada para blocos
     for (int k = 0; k < qtdade_blocos; k++) {
         free(blocos[k].Vetor_Bloco);
     }
