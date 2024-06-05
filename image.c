@@ -851,3 +851,101 @@ ImageRGB *FiltroMosaico_RGB(ImageRGB *img_rgb){
     return img_rgb; 
 }
 
+//Daqui pra baixo é o Mosaico Gray
+
+
+Bloco_Gray *coletarBlocos_Mosaico_Gray(ImageGray *img_gray, int qtdade_blocos, int tamanho_bloco) {
+    Bloco_Gray *blocos = (Bloco_Gray*)malloc(qtdade_blocos * sizeof(Bloco_Gray));
+    if (blocos == NULL) {
+        printf("Falha na alocacao\n");
+        exit(1);
+    }
+
+    int linha = 0;
+    int coluna = 0;
+
+    for (int k = 0; k < qtdade_blocos; k++) {
+        blocos[k].Vetor_Bloco = (int*) malloc(tamanho_bloco * sizeof(int));        
+
+        if (blocos[k].Vetor_Bloco == NULL) {
+            printf("Falha na alocacao\n");
+            for (int l = 0; l < k; l++) {
+                    free(blocos[l].Vetor_Bloco); 
+                }
+                free(blocos);
+                exit(1); 
+            }
+            
+       
+
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                int posicao = (linha + i) * img_gray->dim.largura + (coluna + j);
+                blocos[k].Vetor_Bloco[i * 5 + j] = img_gray->pixels[posicao].value;
+                
+            }
+        }
+        blocos[k].posicao = k;
+
+        // Atualiza coluna e linha
+        coluna += 5;
+        if (coluna >= img_gray->dim.largura) {
+            coluna = 0;
+            linha += 5;
+        }
+    }
+
+    return blocos;
+}
+
+void remontar_Mosaico_Gray(ImageGray *img_gray, Bloco_Gray *blocos, int qtdade_blocos) {
+    int linha = 0;
+    int coluna = 0;
+
+    for (int k = 0; k < qtdade_blocos; k++) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                int posicao = (linha + i) * img_gray->dim.largura + (coluna + j);
+                img_gray->pixels[posicao].value = blocos[k].Vetor_Bloco[i * 5 + j];
+            }
+        }
+
+        // Atualiza coluna e linha
+        coluna += 5;
+        if (coluna >= img_gray->dim.largura) {
+            coluna = 0;
+            linha += 5;
+        }
+    }
+}
+
+
+
+ImageGray *FiltroMosaico_Gray(ImageGray *img_gray){
+    Bloco_Gray *blocos; 
+    int qtdade_blocos = 10000;
+    int tamanho_bloco = 25;
+    int media_pixel; 
+
+    blocos = coletarBlocos_Mosaico_Gray(img_gray, qtdade_blocos, tamanho_bloco);
+     
+
+    for(int i = 0; i < qtdade_blocos; i++){
+        media_pixel = 0; 
+        for(int j = 0; j < tamanho_bloco; j++){
+          media_pixel = blocos[i].Vetor_Bloco[j] + media_pixel; 
+        }
+        media_pixel = media_pixel / tamanho_bloco; 
+        for(int k = 0; k < tamanho_bloco; k++){
+            blocos[i].Vetor_Bloco[k] = media_pixel;
+        }
+
+    }
+
+    remontar_Mosaico_Gray(img_gray, blocos, qtdade_blocos); 
+
+
+
+    return img_gray; 
+}
+
