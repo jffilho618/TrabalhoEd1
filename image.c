@@ -502,8 +502,8 @@ ImageRGB *transpose_rgb(ImageRGB *img_gray) {
 //a partir daqui vem a implementação da Clahe_Gray
 
 
-Bloco* coletarBlocos(ImageGray *img_gray, int qtdade_blocos, int tamanho_bloco) {
-    Bloco *blocos = (Bloco*)malloc(qtdade_blocos * sizeof(Bloco));
+Bloco_Gray* coletarBlocos_Clahe_Gray(ImageGray *img_gray, int qtdade_blocos, int tamanho_bloco) {
+    Bloco_Gray *blocos = (Bloco_Gray*)malloc(qtdade_blocos * sizeof(Bloco_Gray));
     if (blocos == NULL) {
         printf("Falha na alocacao\n");
         exit(1);
@@ -542,7 +542,8 @@ Bloco* coletarBlocos(ImageGray *img_gray, int qtdade_blocos, int tamanho_bloco) 
     return blocos;
 }
 
-void recolocarValores(ImageGray *img_gray, Bloco *blocos, int qtdade_blocos) {
+
+void recolocarValores_Gray(ImageGray *img_gray, Bloco_Gray *blocos, int qtdade_blocos) {
     int linha = 0;
     int coluna = 0;
 
@@ -563,13 +564,13 @@ void recolocarValores(ImageGray *img_gray, Bloco *blocos, int qtdade_blocos) {
     }
 }
 
-void limitar_distribuicao(Histograma *histogramas, int localizacao_bloco) {
+void limitar_distribuicao_Gray(Histograma_Gray *histogramas, int localizacao_bloco) {
     int limite = 4; 
     int qtdade_pixels = 256; 
     int excesso = 0;
     int subtracao, excedente, restante; 
-
     
+        
     for (int j = 0; j < qtdade_pixels; j++) {
         if (histogramas[localizacao_bloco].frequencias[j] > limite) {
             subtracao = histogramas[localizacao_bloco].frequencias[j] - limite; 
@@ -598,14 +599,16 @@ void limitar_distribuicao(Histograma *histogramas, int localizacao_bloco) {
     }
 }
 
-void normalizacao_e_equalizacao_do_histograma(Histograma *histogramas, int numero_bloco) {
+
+void normalizacao_e_equalizacao_do_histograma_Gray(Histograma_Gray *histogramas, int numero_bloco) {
     int valor, resultado;
     float divisor1, divisor2, normalizacao;
+    
 
     for (int i = 1; i < 256; i++) {
         histogramas[numero_bloco].frequencias_CDF[i] += histogramas[numero_bloco].frequencias_CDF[i - 1];
     }
-
+    
     for (int i = 0; i < 400; i++) {
         valor = histogramas[numero_bloco].valores_originais[i];
         divisor1 = (float)histogramas[numero_bloco].frequencias_CDF[valor];
@@ -614,9 +617,12 @@ void normalizacao_e_equalizacao_do_histograma(Histograma *histogramas, int numer
         resultado = (int)(normalizacao * 255);
         histogramas[numero_bloco].valores_equalizados[i] = resultado;
     }
+    
+
 }
 
-void preenchendo_histogramas(Histograma *histogramas, Bloco *blocos, int qtdade_blocos) {
+
+void preenchendo_histogramas_Gray(Histograma_Gray *histogramas, Bloco_Gray *blocos, int qtdade_blocos) {
     int tamanho_histograma = 256;
     int valores = 400;
 
@@ -641,9 +647,9 @@ void preenchendo_histogramas(Histograma *histogramas, Bloco *blocos, int qtdade_
             histogramas[k].frequencias[blocos[k].Vetor_Bloco[i]]++;
         }
 
-        limitar_distribuicao(histogramas, k);
+        limitar_distribuicao_Gray(histogramas, k);
 
-        normalizacao_e_equalizacao_do_histograma(histogramas, k);
+        normalizacao_e_equalizacao_do_histograma_Gray(histogramas, k);
 
         for (int i = 0; i < valores; i++) {
             blocos[k].Vetor_Bloco[i] = histogramas[k].valores_equalizados[i];
@@ -651,16 +657,19 @@ void preenchendo_histogramas(Histograma *histogramas, Bloco *blocos, int qtdade_
     }
 }
 
-void Iniciando_Histograma(Bloco *blocos) {
+
+void Iniciando_Histograma_Gray(Bloco_Gray *blocos) {
     int qtdade_blocos = 625;
-    Histograma *histogramas = (Histograma*) malloc(qtdade_blocos * sizeof(Histograma));
+    Histograma_Gray *histogramas = (Histograma_Gray*) malloc(qtdade_blocos * sizeof(Histograma_Gray));
 
     if (histogramas == NULL) {
         printf("Falha na alocacao");
         exit(1);
     }
 
-    preenchendo_histogramas(histogramas, blocos, qtdade_blocos);
+    preenchendo_histogramas_Gray(histogramas, blocos, qtdade_blocos);
+    
+
 
     for (int k = 0; k < qtdade_blocos; k++) {
         free(histogramas[k].valores_originais);
@@ -671,22 +680,25 @@ void Iniciando_Histograma(Bloco *blocos) {
     free(histogramas);
 }
 
+
 ImageGray *clahe_gray(ImageGray *img_gray){
     int tamanho_bloco = 400;    
     int qtdade_blocos = 625;
-    Bloco *blocos;
+    Bloco_Gray *blocos;
     
-    blocos = coletarBlocos(img_gray, qtdade_blocos, tamanho_bloco);
-    Iniciando_Histograma(blocos); 
-    recolocarValores(img_gray, blocos, qtdade_blocos);
+    blocos = coletarBlocos_Clahe_Gray(img_gray, qtdade_blocos, tamanho_bloco);
+    Iniciando_Histograma_Gray(blocos); 
+    recolocarValores_Gray(img_gray, blocos, qtdade_blocos);
+    
 
+    // Liberar a memória alocada para blocos
     for (int k = 0; k < qtdade_blocos; k++) {
         free(blocos[k].Vetor_Bloco);
     }
     free(blocos);
 
     return img_gray;
-}
+} 
 
 // A partir daqui é o filtro sepia
 
@@ -717,3 +729,235 @@ ImageRGB *Filtro_Sepia(ImageRGB *img_rgb) {
 
     return img_rgb;
 }
+
+//Daqui pra baixo é o filtro mosaico no RGB
+
+
+Bloco_RGB *coletarBlocos_Mosaico_RGB(ImageRGB *img_rgb, int qtdade_blocos, int tamanho_bloco) {
+    Bloco_RGB *blocos = (Bloco_RGB*)malloc(qtdade_blocos * sizeof(Bloco_RGB));
+    if (blocos == NULL) {
+        printf("Falha na alocacao\n");
+        exit(1);
+    }
+
+    int linha = 0;
+    int coluna = 0;
+
+    for (int k = 0; k < qtdade_blocos; k++) {
+        blocos[k].Vetor_Bloco_Blue = (int*) malloc(tamanho_bloco * sizeof(int));
+        blocos[k].Vetor_Bloco_Green = (int*) malloc(tamanho_bloco * sizeof(int));
+        blocos[k].Vetor_Bloco_Red = (int*) malloc(tamanho_bloco * sizeof(int));
+
+        if (blocos[k].Vetor_Bloco_Blue == NULL|| blocos[k].Vetor_Bloco_Red == NULL || blocos[k].Vetor_Bloco_Green == NULL) {
+            printf("Falha na alocacao\n");
+            if(blocos[k].Vetor_Bloco_Blue == NULL){
+                for (int l = 0; l < k; l++) {
+                    free(blocos[l].Vetor_Bloco_Red); 
+                    free(blocos[l].Vetor_Bloco_Blue);
+                    free(blocos[l].Vetor_Bloco_Green);
+                }
+                free(blocos);
+                exit(1); 
+            }
+            if(blocos[k].Vetor_Bloco_Red == NULL){
+                for (int l = 0; l < k; l++) {
+                    free(blocos[l].Vetor_Bloco_Red); 
+                    free(blocos[l].Vetor_Bloco_Blue);
+                    free(blocos[l].Vetor_Bloco_Green);
+                }
+                free(blocos);
+                exit(1); 
+            }
+            if(blocos[k].Vetor_Bloco_Green == NULL){
+                for (int l = 0; l < k; l++) {
+                    free(blocos[l].Vetor_Bloco_Red); 
+                    free(blocos[l].Vetor_Bloco_Blue);
+                    free(blocos[l].Vetor_Bloco_Green);
+                }
+                free(blocos);
+                exit(1); 
+            }
+        }
+
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                int posicao = (linha + i) * img_rgb->dim.largura + (coluna + j);
+                blocos[k].Vetor_Bloco_Red[i * 5 + j] = img_rgb->pixels[posicao].red;
+                blocos[k].Vetor_Bloco_Green[i * 5 + j] = img_rgb->pixels[posicao].green;
+                blocos[k].Vetor_Bloco_Blue[i * 5 + j] = img_rgb->pixels[posicao].blue;
+            }
+        }
+        blocos[k].posicao = k;
+
+        // Atualiza coluna e linha
+        coluna += 5;
+        if (coluna >= img_rgb->dim.largura) {
+            coluna = 0;
+            linha += 5;
+        }
+    }
+
+    return blocos;
+}
+
+void remontar_Mosaico_RGB(ImageRGB *img_rgb, Bloco_RGB *blocos, int qtdade_blocos) {
+    int linha = 0;
+    int coluna = 0;
+
+    for (int k = 0; k < qtdade_blocos; k++) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                int posicao = (linha + i) * img_rgb->dim.largura + (coluna + j);
+                img_rgb->pixels[posicao].blue = blocos[k].Vetor_Bloco_Blue[i * 5 + j];
+                img_rgb->pixels[posicao].green = blocos[k].Vetor_Bloco_Green[i * 5 + j]; 
+                img_rgb->pixels[posicao].red = blocos[k].Vetor_Bloco_Red[i * 5 + j];
+            }
+        }
+
+        // Atualiza coluna e linha
+        coluna += 5;
+        if (coluna >= img_rgb->dim.largura) {
+            coluna = 0;
+            linha += 5;
+        }
+    }
+}
+
+
+
+ImageRGB *FiltroMosaico_RGB(ImageRGB *img_rgb){
+    Bloco_RGB *blocos; 
+    int qtdade_blocos = 10000;
+    int tamanho_bloco = 25;
+    int media_vermelho, media_azul, media_verde; 
+
+    blocos = coletarBlocos_Mosaico_RGB(img_rgb, qtdade_blocos, tamanho_bloco);
+    media_vermelho = 0; 
+    media_azul = 0; 
+    media_verde = 0; 
+
+    for(int i = 0; i < qtdade_blocos; i++){
+        media_vermelho = 0; 
+        media_azul = 0; 
+        media_verde = 0;
+        for(int j = 0; j < tamanho_bloco; j++){
+          media_azul = blocos[i].Vetor_Bloco_Blue[j] + media_azul; 
+          media_vermelho = blocos[i].Vetor_Bloco_Red[j] + media_vermelho;
+          media_verde = blocos[i].Vetor_Bloco_Green[j] + media_verde;
+        }
+        media_azul = media_azul / tamanho_bloco; 
+        media_verde = media_verde / tamanho_bloco; 
+        media_vermelho = media_vermelho / tamanho_bloco; 
+        for(int k = 0; k < tamanho_bloco; k++){
+            blocos[i].Vetor_Bloco_Blue[k] = media_azul;
+            blocos[i].Vetor_Bloco_Green[k] = media_verde; 
+            blocos[i].Vetor_Bloco_Red[k] = media_vermelho; 
+        }
+
+    }
+
+    remontar_Mosaico_RGB(img_rgb, blocos, qtdade_blocos); 
+
+
+
+    return img_rgb; 
+}
+
+//Daqui pra baixo é o Mosaico Gray
+
+
+Bloco_Gray *coletarBlocos_Mosaico_Gray(ImageGray *img_gray, int qtdade_blocos, int tamanho_bloco) {
+    Bloco_Gray *blocos = (Bloco_Gray*)malloc(qtdade_blocos * sizeof(Bloco_Gray));
+    if (blocos == NULL) {
+        printf("Falha na alocacao\n");
+        exit(1);
+    }
+
+    int linha = 0;
+    int coluna = 0;
+
+    for (int k = 0; k < qtdade_blocos; k++) {
+        blocos[k].Vetor_Bloco = (int*) malloc(tamanho_bloco * sizeof(int));        
+
+        if (blocos[k].Vetor_Bloco == NULL) {
+            printf("Falha na alocacao\n");
+            for (int l = 0; l < k; l++) {
+                    free(blocos[l].Vetor_Bloco); 
+                }
+                free(blocos);
+                exit(1); 
+            }
+            
+       
+
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                int posicao = (linha + i) * img_gray->dim.largura + (coluna + j);
+                blocos[k].Vetor_Bloco[i * 5 + j] = img_gray->pixels[posicao].value;
+                
+            }
+        }
+        blocos[k].posicao = k;
+
+        // Atualiza coluna e linha
+        coluna += 5;
+        if (coluna >= img_gray->dim.largura) {
+            coluna = 0;
+            linha += 5;
+        }
+    }
+
+    return blocos;
+}
+
+void remontar_Mosaico_Gray(ImageGray *img_gray, Bloco_Gray *blocos, int qtdade_blocos) {
+    int linha = 0;
+    int coluna = 0;
+
+    for (int k = 0; k < qtdade_blocos; k++) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                int posicao = (linha + i) * img_gray->dim.largura + (coluna + j);
+                img_gray->pixels[posicao].value = blocos[k].Vetor_Bloco[i * 5 + j];
+            }
+        }
+
+        // Atualiza coluna e linha
+        coluna += 5;
+        if (coluna >= img_gray->dim.largura) {
+            coluna = 0;
+            linha += 5;
+        }
+    }
+}
+
+
+
+ImageGray *FiltroMosaico_Gray(ImageGray *img_gray){
+    Bloco_Gray *blocos; 
+    int qtdade_blocos = 10000;
+    int tamanho_bloco = 25;
+    int media_pixel; 
+
+    blocos = coletarBlocos_Mosaico_Gray(img_gray, qtdade_blocos, tamanho_bloco);
+     
+
+    for(int i = 0; i < qtdade_blocos; i++){
+        media_pixel = 0; 
+        for(int j = 0; j < tamanho_bloco; j++){
+          media_pixel = blocos[i].Vetor_Bloco[j] + media_pixel; 
+        }
+        media_pixel = media_pixel / tamanho_bloco; 
+        for(int k = 0; k < tamanho_bloco; k++){
+            blocos[i].Vetor_Bloco[k] = media_pixel;
+        }
+
+    }
+
+    remontar_Mosaico_Gray(img_gray, blocos, qtdade_blocos); 
+
+
+
+    return img_gray; 
+}
+

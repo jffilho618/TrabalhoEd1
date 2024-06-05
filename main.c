@@ -31,6 +31,7 @@ int main() {
                     printf("[4] Clahe\n");
                     printf("[5] Median Blur\n");
                     printf("[6] Sepia\n");
+                    printf("[7] Mosaico Pixel\n");
                     printf("[0] Sair\n");
                     printf("Opcao: ");
                     scanf("%d", &op2);
@@ -61,6 +62,11 @@ int main() {
                            print_image_rgb(img_rgb_copia); 
                            break;
                         }
+                        case 7:{
+                            img_rgb_copia = FiltroMosaico_RGB(img_rgb_copia); 
+                            print_image_rgb(img_rgb_copia); 
+                            break; 
+                        }
                     }
                 } while (op2 != 0);
                 free(img_rgb_copia->pixels);
@@ -78,6 +84,7 @@ int main() {
                     printf("[3] Transpose\n");
                     printf("[4] Clahe\n");
                     printf("[5] Median Blur\n");
+                    printf("[6] Mosaico Pixel\n");
                     printf("[0] Sair\n");
                     printf("Opcao: ");
                     scanf("%d", &op3);
@@ -107,6 +114,11 @@ int main() {
                             img_gray_copia = median_blur_gray(img_gray_copia);
                             print_image_gray(img_gray_copia);
                             break;
+                        }
+                        case 6:{
+                            img_gray_copia = FiltroMosaico_Gray(img_gray_copia); 
+                            print_image_gray(img_gray_copia); 
+                            break; 
                         }
                     }
                 } while (op3 != 0);
