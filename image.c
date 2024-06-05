@@ -687,3 +687,33 @@ ImageGray *clahe_gray(ImageGray *img_gray){
 
     return img_gray;
 }
+
+// A partir daqui é o filtro sepia
+
+ImageRGB *Filtro_Sepia(ImageRGB *img_rgb) {
+    int altura = img_rgb->dim.altura;
+    int largura = img_rgb->dim.largura;
+
+    for (int i = 0; i < altura; i++) {
+        for (int j = 0; j < largura; j++) {
+            int index = i * largura + j;
+
+            
+            int vermelho_original = img_rgb->pixels[index].red;
+            int verde_original = img_rgb->pixels[index].green;
+            int azul_original = img_rgb->pixels[index].blue;
+
+            
+            int novo_vermelho = (int)fmin(0.393 * vermelho_original + 0.769 * verde_original + 0.189 * azul_original, 255);
+            int novo_verde = (int)fmin(0.349 * vermelho_original + 0.686 * verde_original + 0.168 * azul_original, 255);
+            int novo_azul = (int)fmin(0.272 * vermelho_original + 0.534 * verde_original + 0.131 * azul_original, 255);
+
+            
+            img_rgb->pixels[index].red = novo_vermelho;
+            img_rgb->pixels[index].green = novo_verde;
+            img_rgb->pixels[index].blue = novo_azul;
+        }
+    }
+
+    return img_rgb;
+}
