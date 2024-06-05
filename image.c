@@ -502,8 +502,8 @@ ImageRGB *transpose_rgb(ImageRGB *img_gray) {
 //a partir daqui vem a implementação da Clahe_Gray
 
 
-Bloco* coletarBlocos(ImageGray *img_gray, int qtdade_blocos, int tamanho_bloco) {
-    Bloco *blocos = (Bloco*)malloc(qtdade_blocos * sizeof(Bloco));
+Bloco_Gray* coletarBlocos_Clahe_Gray(ImageGray *img_gray, int qtdade_blocos, int tamanho_bloco) {
+    Bloco_Gray *blocos = (Bloco_Gray*)malloc(qtdade_blocos * sizeof(Bloco_Gray));
     if (blocos == NULL) {
         printf("Falha na alocacao\n");
         exit(1);
@@ -542,7 +542,8 @@ Bloco* coletarBlocos(ImageGray *img_gray, int qtdade_blocos, int tamanho_bloco) 
     return blocos;
 }
 
-void recolocarValores(ImageGray *img_gray, Bloco *blocos, int qtdade_blocos) {
+
+void recolocarValores_Gray(ImageGray *img_gray, Bloco_Gray *blocos, int qtdade_blocos) {
     int linha = 0;
     int coluna = 0;
 
@@ -563,13 +564,13 @@ void recolocarValores(ImageGray *img_gray, Bloco *blocos, int qtdade_blocos) {
     }
 }
 
-void limitar_distribuicao(Histograma *histogramas, int localizacao_bloco) {
+void limitar_distribuicao_Gray(Histograma_Gray *histogramas, int localizacao_bloco) {
     int limite = 4; 
     int qtdade_pixels = 256; 
     int excesso = 0;
     int subtracao, excedente, restante; 
-
     
+        
     for (int j = 0; j < qtdade_pixels; j++) {
         if (histogramas[localizacao_bloco].frequencias[j] > limite) {
             subtracao = histogramas[localizacao_bloco].frequencias[j] - limite; 
@@ -598,14 +599,16 @@ void limitar_distribuicao(Histograma *histogramas, int localizacao_bloco) {
     }
 }
 
-void normalizacao_e_equalizacao_do_histograma(Histograma *histogramas, int numero_bloco) {
+
+void normalizacao_e_equalizacao_do_histograma_Gray(Histograma_Gray *histogramas, int numero_bloco) {
     int valor, resultado;
     float divisor1, divisor2, normalizacao;
+    
 
     for (int i = 1; i < 256; i++) {
         histogramas[numero_bloco].frequencias_CDF[i] += histogramas[numero_bloco].frequencias_CDF[i - 1];
     }
-
+    
     for (int i = 0; i < 400; i++) {
         valor = histogramas[numero_bloco].valores_originais[i];
         divisor1 = (float)histogramas[numero_bloco].frequencias_CDF[valor];
@@ -614,9 +617,12 @@ void normalizacao_e_equalizacao_do_histograma(Histograma *histogramas, int numer
         resultado = (int)(normalizacao * 255);
         histogramas[numero_bloco].valores_equalizados[i] = resultado;
     }
+    
+
 }
 
-void preenchendo_histogramas(Histograma *histogramas, Bloco *blocos, int qtdade_blocos) {
+
+void preenchendo_histogramas_Gray(Histograma_Gray *histogramas, Bloco_Gray *blocos, int qtdade_blocos) {
     int tamanho_histograma = 256;
     int valores = 400;
 
@@ -641,9 +647,9 @@ void preenchendo_histogramas(Histograma *histogramas, Bloco *blocos, int qtdade_
             histogramas[k].frequencias[blocos[k].Vetor_Bloco[i]]++;
         }
 
-        limitar_distribuicao(histogramas, k);
+        limitar_distribuicao_Gray(histogramas, k);
 
-        normalizacao_e_equalizacao_do_histograma(histogramas, k);
+        normalizacao_e_equalizacao_do_histograma_Gray(histogramas, k);
 
         for (int i = 0; i < valores; i++) {
             blocos[k].Vetor_Bloco[i] = histogramas[k].valores_equalizados[i];
@@ -651,16 +657,19 @@ void preenchendo_histogramas(Histograma *histogramas, Bloco *blocos, int qtdade_
     }
 }
 
-void Iniciando_Histograma(Bloco *blocos) {
+
+void Iniciando_Histograma_Gray(Bloco_Gray *blocos) {
     int qtdade_blocos = 625;
-    Histograma *histogramas = (Histograma*) malloc(qtdade_blocos * sizeof(Histograma));
+    Histograma_Gray *histogramas = (Histograma_Gray*) malloc(qtdade_blocos * sizeof(Histograma_Gray));
 
     if (histogramas == NULL) {
         printf("Falha na alocacao");
         exit(1);
     }
 
-    preenchendo_histogramas(histogramas, blocos, qtdade_blocos);
+    preenchendo_histogramas_Gray(histogramas, blocos, qtdade_blocos);
+    
+
 
     for (int k = 0; k < qtdade_blocos; k++) {
         free(histogramas[k].valores_originais);
@@ -671,22 +680,25 @@ void Iniciando_Histograma(Bloco *blocos) {
     free(histogramas);
 }
 
+
 ImageGray *clahe_gray(ImageGray *img_gray){
     int tamanho_bloco = 400;    
     int qtdade_blocos = 625;
-    Bloco *blocos;
+    Bloco_Gray *blocos;
     
-    blocos = coletarBlocos(img_gray, qtdade_blocos, tamanho_bloco);
-    Iniciando_Histograma(blocos); 
-    recolocarValores(img_gray, blocos, qtdade_blocos);
+    blocos = coletarBlocos_Clahe_Gray(img_gray, qtdade_blocos, tamanho_bloco);
+    Iniciando_Histograma_Gray(blocos); 
+    recolocarValores_Gray(img_gray, blocos, qtdade_blocos);
+    
 
+    // Liberar a memória alocada para blocos
     for (int k = 0; k < qtdade_blocos; k++) {
         free(blocos[k].Vetor_Bloco);
     }
     free(blocos);
 
     return img_gray;
-}
+} 
 
 // A partir daqui é o filtro sepia
 
