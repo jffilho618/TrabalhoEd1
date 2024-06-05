@@ -68,5 +68,8 @@ ImageRGB* copy_image_rgb(ImageRGB* img);
 void OrdenaVetor(int *tempvetor, int cont);
 int Mediana(int *temp_vetor, int cont);
 int pixelmediana_Gray(ImageGray *img_gray, int posicao_atual);
-int pixelmediana_RGB(ImageRGB *img_rgb, int posicao_atual, int cor);
+int pixelmediana_RGB(ImageRGB *img_rgb, int posicao_atual, int cor); 
+
+ImageRGB *Filtro_Sepia(ImageRGB *img_rgb);
+
 #endif // IMAGE_H
