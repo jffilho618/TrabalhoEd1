@@ -30,6 +30,7 @@ int main() {
                     printf("[3] Transpose\n");
                     printf("[4] Clahe\n");
                     printf("[5] Median Blur\n");
+                    printf("[6] Sepia\n");
                     printf("[0] Sair\n");
                     printf("Opcao: ");
                     scanf("%d", &op2);
@@ -54,6 +55,11 @@ int main() {
                             img_rgb_copia = median_blur_rgb(img_rgb_copia);
                             print_image_rgb(img_rgb_copia);
                             break;
+                        }
+                        case 6:{
+                           img_rgb_copia = Filtro_Sepia(img_rgb_copia); 
+                           print_image_rgb(img_rgb_copia); 
+                           break;
                         }
                     }
                 } while (op2 != 0);
