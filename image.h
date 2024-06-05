@@ -26,14 +26,40 @@ typedef struct imageRGB {
 typedef struct {
     int *Vetor_Bloco;
     int posicao;
-} Bloco;
+}Bloco_Gray;
+
+typedef struct {
+    int *Vetor_Bloco_Green;
+    int *Vetor_Bloco_Red;
+    int *Vetor_Bloco_Blue;
+    int posicao;
+}Bloco_RGB;
+
+typedef struct {
+    int *valores_originais_green;
+    int *valores_originais_red;
+    int *valores_originais_blue;
+
+    int *frequencias_orig_green;
+    int *frequencias_orig_red; 
+    int *frequencias_orig_blue;
+
+    int *valores_equalizados_green;
+    int *valores_equalizados_red;
+    int *valores_equalizados_blue;
+
+    int *frequencias_CDF_green;
+    int *frequencias_CDF_red;
+    int *frequencias_CDF_blue;
+
+} Histograma_RGB;
 
 typedef struct {
     int *valores_originais;
     int *frequencias;
     int *valores_equalizados;
     int *frequencias_CDF;
-} Histograma;
+}Histograma_Gray;
 
 // Funções de criação e liberação
 ImageGray *create_image_gray();
