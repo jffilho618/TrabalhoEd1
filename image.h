@@ -97,5 +97,7 @@ int pixelmediana_Gray(ImageGray *img_gray, int posicao_atual);
 int pixelmediana_RGB(ImageRGB *img_rgb, int posicao_atual, int cor); 
 
 ImageRGB *Filtro_Sepia(ImageRGB *img_rgb);
+ImageRGB *FiltroMosaico_RGB(ImageRGB *img_rgb);
+ImageGray *FiltroMosaico_Gray(ImageGray *img_gray); 
 
 #endif // IMAGE_H
