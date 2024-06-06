@@ -52,6 +52,11 @@ int main() {
                             print_image_rgb(img_rgb_copia);
                             break;
                         }
+                        case 4:{ 
+                            img_rgb_copia = clahe_RGB(img_rgb_copia); 
+                            print_image_rgb(img_rgb_copia); 
+                            break; 
+                        }
                         case 5: {
                             img_rgb_copia = median_blur_rgb(img_rgb_copia);
                             print_image_rgb(img_rgb_copia);
