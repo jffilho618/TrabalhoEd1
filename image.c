@@ -700,6 +700,345 @@ ImageGray *clahe_gray(ImageGray *img_gray){
     return img_gray;
 } 
 
+//A partir daqui é a CLAHE RGB
+
+Bloco_RGB  *coletarBlocos_Clahe_RGB(ImageRGB *img_rgb, int qtdade_blocos, int tamanho_bloco) {
+    Bloco_RGB *blocos = (Bloco_RGB*)malloc(qtdade_blocos * sizeof(Bloco_RGB));
+    if (blocos == NULL) {
+        printf("Falha na alocacao\n");
+        exit(1);
+    }
+
+    int linha = 0;
+    int coluna = 0;
+
+    for (int k = 0; k < qtdade_blocos; k++) {
+        blocos[k].Vetor_Bloco_Blue = (int*) malloc(tamanho_bloco * sizeof(int)); 
+        blocos[k].Vetor_Bloco_Green = (int*) malloc(tamanho_bloco * sizeof(int));
+        blocos[k].Vetor_Bloco_Red = (int*) malloc(tamanho_bloco * sizeof(int));
+              
+
+        if (blocos[k].Vetor_Bloco_Blue == NULL || blocos[k].Vetor_Bloco_Red == NULL || blocos[k].Vetor_Bloco_Green == NULL) {
+            printf("Falha na alocacao\n");
+            for (int l = 0; l < k; l++) {
+                free(blocos[l].Vetor_Bloco_Blue);
+                free(blocos[l].Vetor_Bloco_Red);
+                free(blocos[k].Vetor_Bloco_Green);
+            }
+            free(blocos);
+            exit(1);
+        }
+
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 20; j++) {
+                int posicao = (linha + i) * img_rgb->dim.largura + (coluna + j);
+                blocos[k].Vetor_Bloco_Blue[i * 20 + j] = img_rgb->pixels[posicao].blue;
+                blocos[k].Vetor_Bloco_Red[i * 20 + j] = img_rgb->pixels[posicao].red;
+                blocos[k].Vetor_Bloco_Green[i * 20 + j] = img_rgb->pixels[posicao].green;
+            }
+        }
+        blocos[k].posicao = k;
+
+        // Atualiza coluna e linha
+        coluna += 20;
+        if (coluna >= img_rgb->dim.largura) {
+            coluna = 0;
+            linha += 20;
+        }
+    }
+
+    return blocos;
+}
+
+void recolocarValores_RGB(ImageRGB *img_rgb, Bloco_RGB *blocos, int qtdade_blocos) {
+    int linha = 0;
+    int coluna = 0;
+
+    for (int k = 0; k < qtdade_blocos; k++) {
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 20; j++) {
+                int posicao = (linha + i) * img_rgb->dim.largura + (coluna + j);
+                img_rgb->pixels[posicao].red = blocos[k].Vetor_Bloco_Red[i * 20 + j];
+                img_rgb->pixels[posicao].green = blocos[k].Vetor_Bloco_Green[i * 20 + j]; 
+                img_rgb->pixels[posicao].blue = blocos[k].Vetor_Bloco_Blue[i * 20 + j];
+            }
+        }
+
+        // Atualiza coluna e linha
+        coluna += 20;
+        if (coluna >= img_rgb->dim.largura) {
+            coluna = 0;
+            linha += 20;
+        }
+    }
+}
+
+void limitar_distribuicao_RGB(Histograma_RGB *histogramas, int localizacao_bloco) {
+    int limite = 4; 
+    int qtdade_pixels = 256; 
+    int excesso = 0;
+    int subtracao, excedente, restante; 
+    
+    
+    //Isso aqui tudo foi pro RED    
+    for (int j = 0; j < qtdade_pixels; j++) {
+        if (histogramas[localizacao_bloco].frequencias_orig_red[j] > limite) {
+            subtracao = histogramas[localizacao_bloco].frequencias_orig_red[j] - limite; 
+            excesso += subtracao; 
+            histogramas[localizacao_bloco].frequencias_orig_red[j] = limite; 
+        }
+
+    }
+
+    excedente = excesso / 256; 
+    restante = excesso % 256; 
+    
+    
+    for (int i = 0; i < qtdade_pixels; i++) {
+        histogramas[localizacao_bloco].frequencias_orig_red[i] += excedente; 
+    }
+    
+    
+    for (int i = 0; i < restante; i++) {
+        histogramas[localizacao_bloco].frequencias_orig_red[i] += 1; 
+    } 
+
+    //Isso aqui é pro GREEN 
+
+    excedente = 0; 
+    restante = 0; 
+    subtracao = 0; 
+    excesso = 0; 
+    
+    for (int j = 0; j < qtdade_pixels; j++) {
+        if (histogramas[localizacao_bloco].frequencias_orig_green[j] > limite) {
+            subtracao = histogramas[localizacao_bloco].frequencias_orig_green[j] - limite; 
+            excesso += subtracao; 
+            histogramas[localizacao_bloco].frequencias_orig_green[j] = limite; 
+        }
+
+    }
+
+    excedente = excesso / 256; 
+    restante = excesso % 256; 
+    
+    
+    for (int i = 0; i < qtdade_pixels; i++) {
+        histogramas[localizacao_bloco].frequencias_orig_green[i] += excedente; 
+    }
+    
+    
+    for (int i = 0; i < restante; i++) {
+        histogramas[localizacao_bloco].frequencias_orig_green[i] += 1;
+    } 
+
+    //Isso aqui é pro BLUE
+
+    excedente = 0; 
+    restante = 0; 
+    subtracao = 0; 
+    excesso = 0; 
+    
+    for (int j = 0; j < qtdade_pixels; j++) {
+        if (histogramas[localizacao_bloco].frequencias_orig_blue[j] > limite) {
+            subtracao = histogramas[localizacao_bloco].frequencias_orig_blue[j] - limite; 
+            excesso += subtracao; 
+            histogramas[localizacao_bloco].frequencias_orig_blue[j] = limite; 
+        }
+
+    }
+
+    excedente = excesso / 256; 
+    restante = excesso % 256; 
+    
+    
+    for (int i = 0; i < qtdade_pixels; i++) {
+        histogramas[localizacao_bloco].frequencias_orig_blue[i] += excedente; 
+    }
+    
+    
+    for (int i = 0; i < restante; i++) {
+        histogramas[localizacao_bloco].frequencias_orig_blue[i] += 1;
+    }
+
+    
+
+    
+    histogramas[localizacao_bloco].frequencias_CDF_blue[0] = histogramas[localizacao_bloco].frequencias_orig_blue[0];
+    histogramas[localizacao_bloco].frequencias_CDF_green[0] = histogramas[localizacao_bloco].frequencias_orig_green[0]; 
+    histogramas[localizacao_bloco].frequencias_CDF_red[0] = histogramas[localizacao_bloco].frequencias_orig_red[0]; 
+    for (int i = 1; i < qtdade_pixels; i++) {
+        histogramas[localizacao_bloco].frequencias_CDF_blue[i] = histogramas[localizacao_bloco].frequencias_CDF_blue[i - 1] + histogramas[localizacao_bloco].frequencias_orig_blue[i]; 
+        histogramas[localizacao_bloco].frequencias_CDF_green[i] = histogramas[localizacao_bloco].frequencias_CDF_green[i - 1] + histogramas[localizacao_bloco].frequencias_orig_green[i]; 
+        histogramas[localizacao_bloco].frequencias_CDF_red[i] = histogramas[localizacao_bloco].frequencias_CDF_red[i - 1] + histogramas[localizacao_bloco].frequencias_orig_red[i];
+    }
+}
+
+void normalizacao_e_equalizacao_do_histograma_RGB(Histograma_RGB *histogramas, int numero_bloco) {
+    int valor, resultado;
+    float divisor1, divisor2, normalizacao;
+
+    // Acumulação do CDF para cada canal
+    for (int i = 1; i < 256; i++) {
+        histogramas[numero_bloco].frequencias_CDF_blue[i] += histogramas[numero_bloco].frequencias_CDF_blue[i - 1]; 
+        histogramas[numero_bloco].frequencias_CDF_green[i] += histogramas[numero_bloco].frequencias_CDF_green[i - 1]; 
+        histogramas[numero_bloco].frequencias_CDF_red[i] += histogramas[numero_bloco].frequencias_CDF_red[i - 1];
+    }
+
+    // Normalização do RED
+    for (int i = 0; i < 400; i++) {
+        valor = histogramas[numero_bloco].valores_originais_red[i];
+        divisor1 = (float)histogramas[numero_bloco].frequencias_CDF_red[valor];
+        divisor2 = (float)histogramas[numero_bloco].frequencias_CDF_red[255];
+        normalizacao = divisor1 / divisor2;
+        resultado = (int)(normalizacao * 255);
+        histogramas[numero_bloco].valores_equalizados_red[i] = resultado;
+    }
+
+    // Normalização do GREEN
+    for (int i = 0; i < 400; i++) {
+        valor = histogramas[numero_bloco].valores_originais_green[i];
+        divisor1 = (float)histogramas[numero_bloco].frequencias_CDF_green[valor];
+        divisor2 = (float)histogramas[numero_bloco].frequencias_CDF_green[255];
+        normalizacao = divisor1 / divisor2;
+        resultado = (int)(normalizacao * 255);
+        histogramas[numero_bloco].valores_equalizados_green[i] = resultado;
+    }
+
+    // Normalização do BLUE
+    for (int i = 0; i < 400; i++) {
+        valor = histogramas[numero_bloco].valores_originais_blue[i];
+        divisor1 = (float)histogramas[numero_bloco].frequencias_CDF_blue[valor];
+        divisor2 = (float)histogramas[numero_bloco].frequencias_CDF_blue[255];
+        normalizacao = divisor1 / divisor2;
+        resultado = (int)(normalizacao * 255);
+        histogramas[numero_bloco].valores_equalizados_blue[i] = resultado;
+    }
+}
+
+void preenchendo_histogramas_RGB(Histograma_RGB *histogramas, Bloco_RGB *blocos, int qtdade_blocos) {
+    int tamanho_histograma = 256;
+    int valores = 400;
+
+    for (int k = 0; k < qtdade_blocos; k++) {
+        histogramas[k].valores_originais_blue = (int*) malloc(valores * sizeof(int));
+        histogramas[k].valores_originais_green = (int*) malloc(valores * sizeof(int));
+        histogramas[k].valores_originais_red = (int*) malloc(valores * sizeof(int));
+
+
+        histogramas[k].valores_equalizados_blue = (int*) malloc(valores * sizeof(int));
+        histogramas[k].valores_equalizados_green = (int*) malloc(valores * sizeof(int)); 
+        histogramas[k].valores_equalizados_red = (int*) malloc(valores * sizeof(int));
+
+
+        histogramas[k].frequencias_orig_blue = (int*) malloc(tamanho_histograma * sizeof(int));
+        histogramas[k].frequencias_orig_green = (int*) malloc(tamanho_histograma * sizeof(int));
+        histogramas[k].frequencias_orig_red = (int*) malloc(tamanho_histograma * sizeof(int)); 
+
+
+        histogramas[k].frequencias_CDF_blue = (int*) malloc(tamanho_histograma * sizeof(int));
+        histogramas[k].frequencias_CDF_green = (int*) malloc(tamanho_histograma * sizeof(int));
+        histogramas[k].frequencias_CDF_red = (int*) malloc(tamanho_histograma * sizeof(int));
+
+
+        if (histogramas[k].valores_originais_blue == NULL || histogramas[k].valores_equalizados_blue == NULL || histogramas[k].frequencias_orig_blue == NULL || histogramas[k].frequencias_CDF_blue == NULL) {
+            printf("Falha na alocacao\n");
+            exit(1);
+        } 
+
+        // tá faltando uma liberação de memória aqui (implementar depois)
+
+        for (int m = 0; m < tamanho_histograma; m++) {
+            histogramas[k].frequencias_orig_blue[m] = 0;
+            histogramas[k].frequencias_orig_green[m] = 0; 
+            histogramas[k].frequencias_orig_red[m] = 0;
+
+            histogramas[k].frequencias_CDF_blue[m] = 0;
+            histogramas[k].frequencias_CDF_green[m] = 0; 
+            histogramas[k].frequencias_CDF_red[m] = 0;
+        }
+
+        for (int i = 0; i < valores; i++) {
+            histogramas[k].valores_originais_blue[i] = blocos[k].Vetor_Bloco_Blue[i];
+            histogramas[k].valores_originais_green[i] = blocos[k].Vetor_Bloco_Green[i]; 
+            histogramas[k].valores_originais_red[i] = blocos[k].Vetor_Bloco_Red[i];
+
+            histogramas[k].frequencias_orig_blue[blocos[k].Vetor_Bloco_Blue[i]]++;
+            histogramas[k].frequencias_orig_green[blocos[k].Vetor_Bloco_Green[i]]++;
+            histogramas[k].frequencias_orig_red[blocos[k].Vetor_Bloco_Red[i]]++;
+        }
+
+        limitar_distribuicao_RGB(histogramas, k);
+
+        normalizacao_e_equalizacao_do_histograma_RGB(histogramas, k);
+
+        for (int i = 0; i < valores; i++) {
+            blocos[k].Vetor_Bloco_Blue[i] = histogramas[k].valores_equalizados_blue[i];
+            blocos[k].Vetor_Bloco_Green[i] = histogramas[k].valores_equalizados_green[i];
+            blocos[k].Vetor_Bloco_Red[i] = histogramas[k].valores_equalizados_red[i];
+        }
+    }
+}
+
+void Iniciando_Histograma_RGB(Bloco_RGB *blocos) {
+    int qtdade_blocos = 625;
+    Histograma_RGB *histogramas = (Histograma_RGB*) malloc(qtdade_blocos * sizeof(Histograma_RGB));
+
+    if (histogramas == NULL) {
+        printf("Falha na alocacao");
+        exit(1);
+    }
+
+    preenchendo_histogramas_RGB(histogramas, blocos, qtdade_blocos);
+    
+
+
+    for (int k = 0; k < qtdade_blocos; k++) {
+        free(histogramas[k].valores_originais_blue);
+        free(histogramas[k].valores_originais_green);
+        free(histogramas[k].valores_originais_red); 
+
+
+        free(histogramas[k].valores_equalizados_blue);
+        free(histogramas[k].valores_equalizados_green);
+        free(histogramas[k].valores_equalizados_red);
+
+
+        free(histogramas[k].frequencias_orig_blue);
+        free(histogramas[k].frequencias_orig_green);
+        free(histogramas[k].frequencias_orig_red);
+
+        free(histogramas[k].frequencias_CDF_blue);
+        free(histogramas[k].frequencias_CDF_green);
+        free(histogramas[k].frequencias_CDF_red);
+    }
+    free(histogramas);
+}
+
+ImageRGB *clahe_RGB(ImageRGB *img_rgb){
+    int tamanho_bloco = 400;    
+    int qtdade_blocos = 625;
+    Bloco_RGB *blocos;
+    
+    blocos = coletarBlocos_Clahe_RGB(img_rgb, qtdade_blocos, tamanho_bloco);
+    Iniciando_Histograma_RGB(blocos); 
+    recolocarValores_RGB(img_rgb, blocos, qtdade_blocos);
+    
+
+    // Liberar a memória alocada para blocos
+    for (int k = 0; k < qtdade_blocos; k++) {
+        free(blocos[k].Vetor_Bloco_Blue);
+        free(blocos[k].Vetor_Bloco_Green);
+        free(blocos[k].Vetor_Bloco_Red);
+    }
+    free(blocos);
+
+    return img_rgb;
+}
+
+
+
+
 // A partir daqui é o filtro sepia
 
 ImageRGB *Filtro_Sepia(ImageRGB *img_rgb) {
