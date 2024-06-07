@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "image.h"
+#include <math.h>
 
 ImageGray *create_image_gray(){
     FILE *input_image_example_gray = fopen("C:\\Users\\jffil\\OneDrive\\Documentos\\ED1\\Trabalho_2_avaliacao\\TrabalhoEd1\\imagem_convertida_gray.txt", "r");
@@ -1300,3 +1301,30 @@ ImageGray *FiltroMosaico_Gray(ImageGray *img_gray){
     return img_gray; 
 }
 
+No_duplo_gray *criar_lista_dupla_gray(){
+    return NULL;
+}
+
+No_duplo_gray *Add_inicio_duplo_gray(No_duplo_gray *lista, ImageGray *img_gray){
+    No_duplo_gray *novo = (No_duplo_gray*) malloc(sizeof(No_duplo_gray));
+    if(novo == NULL){
+        printf("Erro na alocação\n");
+        exit(1);
+    }
+
+    if (lista == NULL){
+        novo->img_gray = img_gray;
+        novo->prox = NULL;
+        novo->ant = NULL;
+        return novo;
+    }
+    
+    else
+    {
+        novo->img_gray = img_gray;
+        novo->prox = lista;
+        novo->ant = NULL;
+        lista->ant = novo;
+        return novo;
+    }
+}

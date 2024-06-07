@@ -61,6 +61,12 @@ typedef struct {
     int *frequencias_CDF;
 }Histograma_Gray;
 
+typedef struct no_duplo_gray{
+    ImageGray *img_gray;
+    struct no_duplo_gray *prox;
+    struct no_duplo_gray *ant;
+}No_duplo_gray;
+
 // Funções de criação e liberação
 ImageGray *create_image_gray();
 void free_image_gray(ImageGray *img_gray);
@@ -100,5 +106,8 @@ int pixelmediana_RGB(ImageRGB *img_rgb, int posicao_atual, int cor);
 ImageRGB *Filtro_Sepia(ImageRGB *img_rgb);
 ImageRGB *FiltroMosaico_RGB(ImageRGB *img_rgb);
 ImageGray *FiltroMosaico_Gray(ImageGray *img_gray); 
+
+No_duplo_gray *criar_lista_dupla_gray();
+No_duplo_gray *Add_inicio_duplo_gray(No_duplo_gray *Lista, ImageGray *img_gray);
 
 #endif // IMAGE_H
