@@ -1328,3 +1328,136 @@ No_duplo_gray *Add_inicio_duplo_gray(No_duplo_gray *lista, ImageGray *img_gray){
         return novo;
     }
 }
+
+void manipular_historico_gray(No_duplo_gray *hist){
+    if (hist->prox == NULL)
+    {
+        printf("\nNao ha historico de alteracoes\n");
+    }
+    else
+    {                            
+
+        int op4;
+        No_duplo_gray *aux = hist;
+
+        print_image_gray(aux->img_gray);
+        do
+        {
+            printf("[1] Proximo\n");
+            printf("[2] Anterior\n");
+            printf("[0] Sair\n");
+            printf("Opcao: ");
+            scanf("%d", &op4);
+            switch (op4)
+            {
+                case 1:
+                    if (aux->ant != NULL)
+                    {
+                        aux = aux->ant;
+                        print_image_gray(aux->img_gray);
+                    }
+                    else
+                    {
+                        printf("\nNao ha proximo\n");
+                    }
+                    break;
+            
+                case 2:
+                    if (aux->prox != NULL)
+                    {
+                        aux = aux->prox;
+                        print_image_gray(aux->img_gray);
+                    }
+
+                    else
+                    {
+                        printf("\nNao ha anterior\n");
+                    }
+                    break;
+                case 3:
+                    break;
+            }
+        } while (op4 != 0);
+    }
+}
+
+No_duplo_rgb *criar_lista_dupla_rgb(){
+    return NULL;
+}
+
+
+No_duplo_rgb *Add_inicio_duplo_rgb(No_duplo_rgb *lista, ImageRGB *img_rgb){
+    No_duplo_rgb *novo = (No_duplo_rgb*) malloc(sizeof(No_duplo_rgb));
+    if(novo == NULL){
+        printf("Erro na alocação\n");
+        exit(1);
+    }
+
+    if (lista == NULL){
+        novo->img_rgb = img_rgb;
+        novo->prox = NULL;
+        novo->ant = NULL;
+        return novo;
+    }
+    
+    else
+    {
+        novo->img_rgb = img_rgb;
+        novo->prox = lista;
+        novo->ant = NULL;
+        lista->ant = novo;
+        return novo;
+    }
+}
+
+void manipular_historico_rgb(No_duplo_rgb *hist){
+    if (hist->prox == NULL)
+    {
+        printf("\nNao ha historico de alteracoes\n");
+    }
+    else
+    {                            
+
+        int op4;
+        No_duplo_rgb *aux = hist;
+
+        print_image_rgb(aux->img_rgb);
+        do
+        {
+            printf("[1] Proximo\n");
+            printf("[2] Anterior\n");
+            printf("[0] Sair\n");
+            printf("Opcao: ");
+            scanf("%d", &op4);
+            switch (op4)
+            {
+                case 1:
+                    if (aux->ant != NULL)
+                    {
+                        aux = aux->ant;
+                        print_image_rgb(aux->img_rgb);
+                    }
+                    else
+                    {
+                        printf("\nNao ha proximo\n");
+                    }
+                    break;
+            
+                case 2:
+                    if (aux->prox != NULL)
+                    {
+                        aux = aux->prox;
+                        print_image_rgb(aux->img_rgb);
+                    }
+
+                    else
+                    {
+                        printf("\nNao ha anterior\n");
+                    }
+                    break;
+                case 3:
+                    break;
+            }
+        } while (op4 != 0);
+    }
+}

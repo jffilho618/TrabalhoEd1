@@ -23,6 +23,9 @@ int main() {
             case 1: {
                 ImageRGB *img_rgb_copia = copy_image_rgb(img_rgb);
                 if (img_rgb_copia == NULL) break;
+                No_duplo_rgb *hist = criar_lista_dupla_rgb();
+                ImageRGB *aux0 = copy_image_rgb(img_rgb_copia);
+                hist = Add_inicio_duplo_rgb(hist, aux0);
                 print_image_rgb(img_rgb);
                 do {
                     printf("[1] Vertical Flip\n");
@@ -32,6 +35,7 @@ int main() {
                     printf("[5] Median Blur\n");
                     printf("[6] Sepia\n");
                     printf("[7] Mosaico Pixel\n");
+                    printf("[8] Historico de Alteracoes\n");
                     printf("[0] Sair\n");
                     printf("Opcao: ");
                     scanf("%d", &op2);
@@ -40,37 +44,55 @@ int main() {
                         case 1: {
                             img_rgb_copia = flip_vertical_rgb(img_rgb_copia);
                             print_image_rgb(img_rgb_copia);
+                            ImageRGB *aux1 = copy_image_rgb(img_rgb_copia);
+                            hist = Add_inicio_duplo_rgb(hist, aux1);
                             break;
                         }
                         case 2: {
                             img_rgb_copia = flip_horizontal_rgb(img_rgb_copia);
                             print_image_rgb(img_rgb_copia);
+                            ImageRGB *aux2 = copy_image_rgb(img_rgb_copia);
+                            hist = Add_inicio_duplo_rgb(hist, aux2);
                             break;
                         }
                         case 3: {
                             img_rgb_copia = transpose_rgb(img_rgb_copia);
                             print_image_rgb(img_rgb_copia);
+                            ImageRGB *aux3 = copy_image_rgb(img_rgb_copia);
+                            hist = Add_inicio_duplo_rgb(hist, aux3);
                             break;
                         }
                         case 4:{ 
                             img_rgb_copia = clahe_RGB(img_rgb_copia); 
-                            print_image_rgb(img_rgb_copia); 
+                            print_image_rgb(img_rgb_copia);
+                            ImageRGB *aux4 = copy_image_rgb(img_rgb_copia);
+                            hist = Add_inicio_duplo_rgb(hist, aux4); 
                             break; 
                         }
                         case 5: {
                             img_rgb_copia = median_blur_rgb(img_rgb_copia);
                             print_image_rgb(img_rgb_copia);
+                            ImageRGB *aux5 = copy_image_rgb(img_rgb_copia);
+                            hist = Add_inicio_duplo_rgb(hist, aux5);
                             break;
                         }
                         case 6:{
-                           img_rgb_copia = Filtro_Sepia(img_rgb_copia); 
-                           print_image_rgb(img_rgb_copia); 
-                           break;
+                            img_rgb_copia = Filtro_Sepia(img_rgb_copia); 
+                            print_image_rgb(img_rgb_copia);
+                            ImageRGB *aux6 = copy_image_rgb(img_rgb_copia);
+                            hist = Add_inicio_duplo_rgb(hist, aux6); 
+                            break;
                         }
                         case 7:{
                             img_rgb_copia = FiltroMosaico_RGB(img_rgb_copia); 
-                            print_image_rgb(img_rgb_copia); 
+                            print_image_rgb(img_rgb_copia);
+                            ImageRGB *aux7 = copy_image_rgb(img_rgb_copia);
+                            hist = Add_inicio_duplo_rgb(hist, aux7);
                             break; 
+                        }
+                        case 8:{
+                            manipular_historico_rgb(hist);
+                            break;
                         }
                     }
                 } while (op2 != 0);
@@ -138,59 +160,11 @@ int main() {
                             img_gray_copia = FiltroMosaico_Gray(img_gray_copia); 
                             print_image_gray(img_gray_copia);
                             ImageGray *aux5 = copy_image_gray(img_gray_copia);
-                            hist = Add_inicio_duplo_gray(hist, aux5); 
+                            hist = Add_inicio_duplo_gray(hist, aux5);
                             break; 
                         }
                         case 7:{
-                            if (hist == NULL)
-                            {
-                                printf("\nNao ha historico de alteracoes\n");
-                            }
-                            else
-                            {                            
-
-                                int op4;
-                                No_duplo_gray *aux = hist;
-
-                                print_image_gray(aux->img_gray);
-                                do
-                                {
-                                    printf("[1] Proximo\n");
-                                    printf("[2] Anterior\n");
-                                    printf("[0] Sair\n");
-                                    printf("Opcao: ");
-                                    scanf("%d", &op4);
-                                    switch (op4)
-                                    {
-                                        case 1:
-                                            if (aux->ant != NULL)
-                                            {
-                                                aux = aux->ant;
-                                                print_image_gray(aux->img_gray);
-                                            }
-                                            else
-                                            {
-                                                printf("\nNao ha proximo\n");
-                                            }
-                                            break;
-                                    
-                                        case 2:
-                                            if (aux->prox != NULL)
-                                            {
-                                                aux = aux->prox;
-                                                print_image_gray(aux->img_gray);
-                                            }
-
-                                            else
-                                            {
-                                                printf("\nNao ha anterior\n");
-                                            }
-                                            break;
-                                        case 3:
-                                            break;
-                                    }
-                                } while (op4 != 0);
-                            }
+                            manipular_historico_gray(hist);
                             break;
                         }
                     }
