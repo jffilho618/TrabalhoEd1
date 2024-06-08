@@ -98,6 +98,7 @@ int main() {
                 } while (op2 != 0);
                 free(img_rgb_copia->pixels);
                 free(img_rgb_copia);
+                free_hist_rgb(hist);
                 break;
             }
                 
@@ -171,6 +172,7 @@ int main() {
                 } while (op3 != 0);
                 free(img_gray_copia->pixels);
                 free(img_gray_copia);
+                free_hist_gray(hist);
                 break;
             }
         }

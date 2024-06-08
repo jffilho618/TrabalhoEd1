@@ -121,4 +121,7 @@ No_duplo_rgb *criar_lista_dupla_rgb();
 No_duplo_rgb *Add_inicio_duplo_rgb(No_duplo_rgb *Lista, ImageRGB *img_rgb);
 void manipular_historico_rgb(No_duplo_rgb *hist);
 
+void free_hist_gray(No_duplo_gray *hist);
+void free_hist_rgb(No_duplo_rgb *hist);
+
 #endif // IMAGE_H
