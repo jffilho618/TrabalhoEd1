@@ -67,6 +67,12 @@ typedef struct no_duplo_gray{
     struct no_duplo_gray *ant;
 }No_duplo_gray;
 
+typedef struct no_duplo_rgb{
+    ImageRGB *img_rgb;
+    struct no_duplo_rgb *prox;
+    struct no_duplo_rgb *ant;
+}No_duplo_rgb;
+
 // Funções de criação e liberação
 ImageGray *create_image_gray();
 void free_image_gray(ImageGray *img_gray);
@@ -109,5 +115,10 @@ ImageGray *FiltroMosaico_Gray(ImageGray *img_gray);
 
 No_duplo_gray *criar_lista_dupla_gray();
 No_duplo_gray *Add_inicio_duplo_gray(No_duplo_gray *Lista, ImageGray *img_gray);
+void manipular_historico_gray(No_duplo_gray *hist);
+
+No_duplo_rgb *criar_lista_dupla_rgb();
+No_duplo_rgb *Add_inicio_duplo_rgb(No_duplo_rgb *Lista, ImageRGB *img_rgb);
+void manipular_historico_rgb(No_duplo_rgb *hist);
 
 #endif // IMAGE_H
