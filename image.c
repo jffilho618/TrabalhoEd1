@@ -1461,3 +1461,25 @@ void manipular_historico_rgb(No_duplo_rgb *hist){
         } while (op4 != 0);
     }
 }
+
+void free_hist_rgb(No_duplo_rgb *hist) {
+    No_duplo_rgb *current = hist;
+    while (current != NULL) {
+        No_duplo_rgb *next = current->prox;
+        free(current->img_rgb->pixels);
+        free(current->img_rgb);
+        free(current);
+        current = next;
+    }
+}
+
+void free_hist_gray(No_duplo_gray *hist) {
+    No_duplo_gray *current = hist;
+    while (current != NULL) {
+        No_duplo_gray *next = current->prox;
+        free(current->img_gray->pixels);
+        free(current->img_gray);
+        free(current);
+        current = next;
+    }
+}
