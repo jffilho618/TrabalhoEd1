@@ -73,6 +73,11 @@ typedef struct no_duplo_rgb{
     struct no_duplo_rgb *ant;
 }No_duplo_rgb;
 
+typedef struct no_simples_gray{
+    ImageGray *img_gray;
+    struct no_simples_gray *prox;
+}No_simples_gray;
+
 // Funções de criação e liberação
 ImageGray *create_image_gray();
 void free_image_gray(ImageGray *img_gray);
@@ -124,4 +129,8 @@ void manipular_historico_rgb(No_duplo_rgb *hist);
 void free_hist_gray(No_duplo_gray *hist);
 void free_hist_rgb(No_duplo_rgb *hist);
 
+void operacoes_randomicas_gray(ImageGray *img_gray);
+No_simples_gray *criar_lista_simples_gray();
+No_simples_gray *Add_inicio_simples_gray(No_simples_gray *Lista, ImageGray *img_gray);
+No_simples_gray *elemento_anterior_simples_gray(No_simples_gray *Lista, No_simples_gray *hist);
 #endif // IMAGE_H

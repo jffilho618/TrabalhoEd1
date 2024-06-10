@@ -106,7 +106,7 @@ int main() {
                 ImageGray *img_gray_copia = copy_image_gray(img_gray);
                 No_duplo_gray *hist = criar_lista_dupla_gray();
                 if (img_gray_copia == NULL) break;
-                print_image_gray(img_gray_copia);
+                //print_image_gray(img_gray_copia);
                 ImageGray *aux0 = copy_image_gray(img_gray_copia);
                 hist = Add_inicio_duplo_gray(hist, aux0);
                 do {
@@ -117,6 +117,7 @@ int main() {
                     printf("[5] Median Blur\n");
                     printf("[6] Mosaico Pixel\n");
                     printf("[7] Historico de Alteracoes\n");
+                    printf("[8] Operacoes randomicas\n");
                     printf("[0] Sair\n");
                     printf("Opcao: ");
                     scanf("%d", &op3);
@@ -166,6 +167,10 @@ int main() {
                         }
                         case 7:{
                             manipular_historico_gray(hist);
+                            break;
+                        }
+                        case 8:{
+                            operacoes_randomicas_gray(img_gray_copia);
                             break;
                         }
                     }

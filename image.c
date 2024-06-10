@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "image.h"
 #include <math.h>
+#include <time.h>
 
 ImageGray *create_image_gray(){
     FILE *input_image_example_gray = fopen("C:\\Users\\jffil\\OneDrive\\Documentos\\ED1\\Trabalho_2_avaliacao\\TrabalhoEd1\\imagem_convertida_gray.txt", "r");
@@ -1483,3 +1484,139 @@ void free_hist_gray(No_duplo_gray *hist) {
         current = next;
     }
 }
+
+No_simples_gray *criar_lista_simples_gray(){
+    return NULL;
+}
+
+No_simples_gray *Add_inicio_simples_gray(No_simples_gray *Lista, ImageGray *img_gray){
+    No_simples_gray *novo = (No_simples_gray*) malloc(sizeof(No_simples_gray));
+    novo->prox = NULL;
+    if(novo == NULL){
+        printf("Erro na alocação\n");
+        exit(1);
+    }
+
+    if (Lista==NULL)
+    {
+        novo->img_gray = img_gray;
+        return novo;
+    }
+    else
+    {
+        novo->img_gray = img_gray;
+        novo->prox = Lista;
+        return novo;
+    }
+    
+}
+
+void free_hist_simples_gray(No_simples_gray *hist) {
+    No_simples_gray *current = hist;
+    while (current != NULL) {
+        No_simples_gray *next = current->prox;
+        free(current->img_gray->pixels);
+        free(current->img_gray);
+        free(current);
+        current = next;
+    }
+}
+
+No_simples_gray *elemento_anterior_simples_gray(No_simples_gray *lista, No_simples_gray *elemento){
+    No_simples_gray *auxxx = lista;
+    while (auxxx->prox != elemento)
+    {
+        auxxx = auxxx->prox;
+    }
+    return auxxx;
+}
+
+void operacoes_randomicas_gray(ImageGray *img_gray){
+    srand(time(NULL));
+    No_simples_gray *lista = criar_lista_simples_gray();
+    ImageGray *img_gray_copia = copy_image_gray(img_gray);
+    int num;
+    ImageGray *auxx = copy_image_gray(img_gray_copia);
+    lista = Add_inicio_simples_gray(lista, auxx);
+    for (int i = 0; i < 5; i++)
+    {   
+        num = rand() % 6;
+        printf("Operacao %d\n", num);
+        switch (num)
+        {
+            case 0:
+                img_gray_copia = flip_vertical_gray(img_gray_copia);
+                ImageGray *auxx0 = copy_image_gray(img_gray_copia);
+                lista = Add_inicio_simples_gray(lista, auxx0);
+                break;
+            case 1:
+                img_gray_copia = flip_horizontal_gray(img_gray_copia);
+                ImageGray *auxx1 = copy_image_gray(img_gray_copia);
+                lista = Add_inicio_simples_gray(lista, auxx1);
+                break;
+            case 2:
+                img_gray_copia = transpose_gray(img_gray_copia);
+                ImageGray *auxx2 = copy_image_gray(img_gray_copia);
+                lista = Add_inicio_simples_gray(lista, auxx2);
+                break;
+            case 3:
+                img_gray_copia = clahe_gray(img_gray_copia);
+                ImageGray *auxx3 = copy_image_gray(img_gray_copia);
+                lista = Add_inicio_simples_gray(lista, auxx3);
+                break;
+            case 4:
+                img_gray_copia = median_blur_gray(img_gray_copia);
+                ImageGray *auxx4 = copy_image_gray(img_gray_copia);
+                lista = Add_inicio_simples_gray(lista, auxx4);
+                break;
+            case 5:
+                img_gray_copia = FiltroMosaico_Gray(img_gray_copia);
+                ImageGray *auxx5 = copy_image_gray(img_gray_copia);
+                lista = Add_inicio_simples_gray(lista, auxx5);
+                break;
+            
+        }
+        
+    }
+    int op;
+    No_simples_gray *lista_aux = lista;
+    print_image_gray(lista_aux->img_gray);
+    do
+    {
+        printf("[1] Proximo\n");
+        printf("[2] Anterior\n");
+        printf("[0] Sair\n");
+        printf("Opcao: ");
+        scanf("%d", &op);
+        switch (op)
+        {
+            case 1:
+                if (lista_aux==lista)
+                {
+                    printf("\nNao ha proximo\n");
+                }
+                else
+                {
+                    lista_aux = elemento_anterior_simples_gray(lista, lista_aux);
+                    print_image_gray(lista_aux->img_gray);
+                }
+                
+                break;
+            case 2:
+                if (lista_aux->prox != NULL)
+                {
+                    lista_aux = lista_aux->prox;
+                    print_image_gray(lista_aux->img_gray);
+                }
+                else
+                {
+                    printf("\nNao ha anterior\n");
+                }
+                break;
+        }
+    } while (op != 0);
+    free_hist_simples_gray(lista);
+    
+}
+
+
