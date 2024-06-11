@@ -26,7 +26,7 @@ int main() {
                 No_duplo_rgb *hist = criar_lista_dupla_rgb();
                 ImageRGB *aux0 = copy_image_rgb(img_rgb_copia);
                 hist = Add_inicio_duplo_rgb(hist, aux0);
-                print_image_rgb(img_rgb);
+                //print_image_rgb(img_rgb);
                 do {
                     printf("[1] Vertical Flip\n");
                     printf("[2] Horizontal Flip\n");
@@ -36,6 +36,7 @@ int main() {
                     printf("[6] Sepia\n");
                     printf("[7] Mosaico Pixel\n");
                     printf("[8] Historico de Alteracoes\n");
+                    printf("[9] Operacoes randomicas\n");
                     printf("[0] Sair\n");
                     printf("Opcao: ");
                     scanf("%d", &op2);
@@ -92,6 +93,11 @@ int main() {
                         }
                         case 8:{
                             manipular_historico_rgb(hist);
+                            break;
+                        }
+                        case 9:{
+                            ImageRGB *aux8 = copy_image_rgb(img_rgb);
+                            operacoes_randomicas_rgb(aux8);
                             break;
                         }
                     }
@@ -170,7 +176,8 @@ int main() {
                             break;
                         }
                         case 8:{
-                            operacoes_randomicas_gray(img_gray_copia);
+                            ImageGray *aux6 = copy_image_gray(img_gray);
+                            operacoes_randomicas_gray(aux6);
                             break;
                         }
                     }

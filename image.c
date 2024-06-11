@@ -1619,4 +1619,142 @@ void operacoes_randomicas_gray(ImageGray *img_gray){
     
 }
 
+No_simples_rgb *criar_lista_simples_rgb(){
+    return NULL;
+}
+
+No_simples_rgb *Add_inicio_simples_rgb(No_simples_rgb *Lista, ImageRGB *img_rgb){
+    No_simples_rgb *novo = (No_simples_rgb*) malloc(sizeof(No_simples_rgb));
+    novo->prox = NULL;
+    if(novo == NULL){
+        printf("Erro na alocação\n");
+        exit(1);
+    }
+
+    if (Lista==NULL)
+    {
+        novo->img_rgb = img_rgb;
+        return novo;
+    }
+    else
+    {
+        novo->img_rgb = img_rgb;
+        novo->prox = Lista;
+        return novo;
+    }
+    
+}
+
+void free_hist_simples_rgb(No_simples_rgb *hist){
+    No_simples_rgb *current = hist;
+    while (current != NULL) {
+        No_simples_rgb *next = current->prox;
+        free(current->img_rgb->pixels);
+        free(current->img_rgb);
+        free(current);
+        current = next;
+    }
+}
+
+No_simples_rgb *elemento_anterior_simples_rgb(No_simples_rgb *lista, No_simples_rgb *elemento){
+    No_simples_rgb *auxxx = lista;
+    while (auxxx->prox != elemento)
+    {
+        auxxx = auxxx->prox;
+    }
+    return auxxx;
+}
+
+void operacoes_randomicas_rgb(ImageRGB *img_rgb){
+    srand(time(NULL));
+    No_simples_rgb *lista = criar_lista_simples_rgb();
+    ImageRGB *img_rgb_copia = copy_image_rgb(img_rgb);
+    int num;
+    ImageRGB *auxx = copy_image_rgb(img_rgb_copia);
+    lista = Add_inicio_simples_rgb(lista, auxx);
+    for (int i = 0; i < 5; i++)
+    {   
+        num = rand() % 7;
+        printf("Operacao %d\n", num);
+        switch (num)
+        {
+            case 0:
+                img_rgb_copia = flip_vertical_rgb(img_rgb_copia);
+                ImageRGB *auxx0 = copy_image_rgb(img_rgb_copia);
+                lista = Add_inicio_simples_rgb(lista, auxx0);
+                break;
+            case 1:
+                img_rgb_copia = flip_horizontal_rgb(img_rgb_copia);
+                ImageRGB *auxx1 = copy_image_rgb(img_rgb_copia);
+                lista = Add_inicio_simples_rgb(lista, auxx1);
+                break;
+            case 2:
+                img_rgb_copia = transpose_rgb(img_rgb_copia);
+                ImageRGB *auxx2 = copy_image_rgb(img_rgb_copia);
+                lista = Add_inicio_simples_rgb(lista, auxx2);
+                break;
+            case 3:
+                img_rgb_copia = clahe_RGB(img_rgb_copia);
+                ImageRGB *auxx3 = copy_image_rgb(img_rgb_copia);
+                lista = Add_inicio_simples_rgb(lista, auxx3);
+                break;
+            case 4:
+                img_rgb_copia = median_blur_rgb(img_rgb_copia);
+                ImageRGB *auxx4 = copy_image_rgb(img_rgb_copia);
+                lista = Add_inicio_simples_rgb(lista, auxx4);
+                break;
+            case 5:
+                img_rgb_copia = FiltroMosaico_RGB(img_rgb_copia);
+                ImageRGB *auxx5 = copy_image_rgb(img_rgb_copia);
+                lista = Add_inicio_simples_rgb(lista, auxx5);
+                break;
+            case 6:
+                img_rgb_copia = Filtro_Sepia(img_rgb_copia);
+                ImageRGB *auxx6 = copy_image_rgb(img_rgb_copia);
+                lista = Add_inicio_simples_rgb(lista, auxx6);
+                break;
+            
+        }
+        
+    }
+    int op;
+    No_simples_rgb *lista_aux = lista;
+    print_image_rgb(lista_aux->img_rgb);
+    do
+    {
+        printf("[1] Proximo\n");
+        printf("[2] Anterior\n");
+        printf("[0] Sair\n");
+        printf("Opcao: ");
+        scanf("%d", &op);
+        switch (op)
+        {
+            case 1:
+                if (lista_aux==lista)
+                {
+                    printf("\nNao ha proximo\n");
+                }
+                else
+                {
+                    lista_aux = elemento_anterior_simples_rgb(lista, lista_aux);
+                    print_image_rgb(lista_aux->img_rgb);
+                }
+                
+                break;
+            case 2:
+                if (lista_aux->prox != NULL)
+                {
+                    lista_aux = lista_aux->prox;
+                    print_image_rgb(lista_aux->img_rgb);
+                }
+                else
+                {
+                    printf("\nNao ha anterior\n");
+                }
+                break;
+        }
+    } while (op != 0);
+    free_hist_simples_rgb(lista);
+    
+}
 
